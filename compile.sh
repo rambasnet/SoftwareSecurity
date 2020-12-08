@@ -18,5 +18,5 @@ elif (( $# == 2 )); then
     g++ -g -m32 -fno-stack-protector -z execstack -no-pie -o $2 $1
 else
     echo "Error... No input file provided..."
-    echo "./compile.sh <inputfile.c> [a.out]"
+    echo "$0 <inputfile.cpp> [a.out]"
 fi

@@ -4,16 +4,15 @@
 
 using namespace std;
 
-void bad() {
+void bad(char *data) {
     char buffer[100];
     printf("buffer is at %p\n", buffer);
-    cout << "Enter some text: ";
-    cin >> buffer;
+    strcpy(buffer, data);
     cout << "buffer contains: \n" << buffer << endl;
 }
 
-int main(void) {
-    bad();
+int main(int argc, char *argv[]) {
+    bad(argv[1]);
     cout << "Good bye!" << endl;
     return 0;
 }
