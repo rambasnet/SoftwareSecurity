@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "hacking.h"
+#include <stdlib.h>
 
 #define FILENAME "/var/notes"
 
