@@ -9,16 +9,20 @@
 - Ubuntu/Debian Linux Bash
 - g++
 - Jupyter Notebook
-- Python 3
+- Python3
 - gdb
 - peda - https://github.com/longld/peda
+- sqlite3 C/C++ library
+- sqlitebrowser
 
 # Install Required Tools
 - update Linux and install tools
 - Install Python 3.x Miniconda for Linux: https://conda.io/en/latest/miniconda.html
 
 ```bash
-bash update
+sudo apt update
+sudo apt install libsqlite3-dev
+sudo apt install sqlitebrowswer
 curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda.sh # pick defaults; python 3 is installed!
 conda update conda
