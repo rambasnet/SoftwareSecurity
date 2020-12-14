@@ -13,8 +13,8 @@ using namespace std;
 void give_shell(){
     // Set the gid to the effective gid
     // this prevents /bin/sh from dropping the privileges
-    gid_t gid = getegid();
-    setresgid(gid, gid, gid);
+    //gid_t gid = getegid();
+    //setresgid(gid, gid, gid);
     system("/bin/sh -i");
 }
 

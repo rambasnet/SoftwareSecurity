@@ -15,7 +15,7 @@ void give_shell(){
     // this prevents /bin/sh from dropping the privileges
     gid_t gid = getegid();
     setresgid(gid, gid, gid);
-    system("/bin/sh -i");
+    system("/bin/sh");
 }
 
 char * mgets(char *dst) {
@@ -52,6 +52,8 @@ void bad() {
 }
 
 int main(int argc, char *argv[]) {
+    gid_t gid = getegid();
+    setresgid(gid, gid, gid);
     bad();
     cout << "Good bye!\n";
     return 0;
