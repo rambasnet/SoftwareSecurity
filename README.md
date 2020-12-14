@@ -1,31 +1,24 @@
-# Hacking 101
+# Ethical Hacking
 
 - Fundamentals of System & Network Exploitation
 - Hacking Tricks, Techniques & Tools
-- Based on the book: Hacking: The Art of Exploitation 2nd Ediition by Jon Erickson
+- C++, Python, and Bash
 
 # Requirements
 
 - Ubuntu/Debian Linux Bash
-- gcc
+- g++
 - Jupyter Notebook
-- Python2 and 3
+- Python 3
 - gdb
 - peda - https://github.com/longld/peda
 
 # Install Required Tools
 - update Linux and install tools
-
-```bash
-sudo apt update
-sudo apt install curl build-essential ccache gdb gcc-multilib
-git clone https://github.com/longld/peda.git ~/peda
-echo "source ~/peda/peda.py" >> ~/.gdbinit
-```
-
 - Install Python 3.x Miniconda for Linux: https://conda.io/en/latest/miniconda.html
 
 ```bash
+bash update
 curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda.sh # pick defaults; python 3 is installed!
 conda update conda
