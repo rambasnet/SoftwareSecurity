@@ -1,2 +1,4 @@
+break main
 break check_authentication(char*)
+
 
