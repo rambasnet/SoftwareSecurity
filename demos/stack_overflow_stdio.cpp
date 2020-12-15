@@ -33,7 +33,8 @@ char * mgets(char *dst) {
         *ptr = ch;
 
     /* now read the rest until \n or EOF */ 
-    while (ch = getchar()) {
+    while (true) {
+        ch = getchar();
         if (ch == '\n' or ch == EOF) break;
         *(++ptr) = ch; 
     }
@@ -44,11 +45,11 @@ char * mgets(char *dst) {
 void bad() {
     char buffer[BUFSIZE];
     printf("buffer is at %p\n", buffer);
-    printf("Enter some data: ");
-    mgets(buffer); // similar to C's gets; depricated
-    //gets(buffer);
-    cout << "buffer contains: " << buffer << endl;
-    printf("size of buffer = %d and length is %d\n", sizeof(buffer), strlen(buffer));
+    cout << "Give me some text: ";
+    fflush(stdout);
+    mgets(buffer); // similar to C's gets;
+    //gets(buffer); // depricated
+    cout << "Acknowledged: " << buffer << endl;
 }
 
 int main(int argc, char *argv[]) {

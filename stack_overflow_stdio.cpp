@@ -20,9 +20,9 @@ void give_shell(){
 
 char * mgets(char *dst) {
     char *ptr = dst;
-    int ch; 
+    char ch; 
 	/* skip leading white spaces */ 
-    while ((ch = getchar()) && (ch == ' ' or ch == '\t') )
+    while (cin.get(ch) && ch == ' ' or ch == '\t') 
         ; 
 
     if ((ch == '\n') or (ch == EOF)) { 
@@ -36,7 +36,7 @@ char * mgets(char *dst) {
     while (ch = getchar()) {
         if (ch == '\n' or ch == EOF) break;
         *(++ptr) = ch; 
-    }
+    } 
     *(++ptr) = 0;
     return dst;
 }
