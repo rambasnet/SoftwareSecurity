@@ -33,3 +33,5 @@
 
 # vscode
 .vscode/
+.ipynb_checkpoints/
+.gbb_history

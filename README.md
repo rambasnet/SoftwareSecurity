@@ -2,11 +2,11 @@
 
 - Fundamentals of System & Network Exploitation
 - Hacking Tricks, Techniques & Tools
-- C++, Python, and Bash
+- Primary Tools: C++, Bash, Python3
 
 # Requirements
 
-- Ubuntu/Debian Linux Bash
+- Ubuntu/Debian Linux (Kali Linux Preferred)
 - g++
 - Jupyter Notebook
 - Python3
@@ -14,6 +14,7 @@
 - peda - https://github.com/longld/peda
 - sqlite3 C/C++ library
 - sqlitebrowser
+- pwntools
 
 # Install Required Tools
 - update Linux and install tools
@@ -34,10 +35,10 @@ conda install -c conda-forge xeus-cling #c++ kernel
 
 - Clone/download this repository
 - Compile and run C programs found in demo-programs folder
-- Using a terminal cd into the repo folder and run `jupyter notebook`
+- Using a terminal cd into the repository folder and run `jupyter notebook`
 
 ```bash
 jupyter notebook
 ```
 - open the link shown in a browser if it's not opened on its own
-- Open 00-Introduction.ipynb chapter and access all the notebooks
+- Open 00-Introduction.ipynb chapter that provides table of contents with link to all the notebooks
