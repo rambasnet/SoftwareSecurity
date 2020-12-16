@@ -6,12 +6,13 @@
 
 # Requirements
 
-- Ubuntu/Debian Linux (Kali Linux Preferred)
-- g++
+- Ubuntu/Debian Linux (Kali Linux 64-bit Preferred)
+  - add account kali:kali with sudo access
+- gcc/g++
 - Jupyter Notebook
 - Python3
 - gdb
-- peda - https://github.com/longld/peda
+- peda - python exploit development assistant for gdb
 - sqlite3 C/C++ library
 - sqlitebrowser
 - pwntools
@@ -22,6 +23,7 @@
 
 ```bash
 sudo apt update
+sudo apt upgrade
 sudo apt install libsqlite3-dev
 sudo apt install sqlitebrowswer
 curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
