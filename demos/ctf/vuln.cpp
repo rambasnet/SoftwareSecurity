@@ -49,7 +49,7 @@ void bad() {
     fflush(stdout);
     mgets(buffer); // similar to C's gets;
     //gets(buffer); // depricated
-    cout << "Acknowledged: " << buffer << endl;
+    cout << "Acknowledged: " << buffer << " with length " << strlen(buffer) << endl;
 }
 
 int main(int argc, char *argv[]) {
