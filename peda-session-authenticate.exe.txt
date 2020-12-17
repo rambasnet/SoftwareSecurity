@@ -1,4 +1,0 @@
-break check_authentication
-
-
-
