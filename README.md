@@ -24,7 +24,10 @@
 ```bash
 sudo apt update
 sudo apt upgrade
+sudo apt install build-essential ccache
 sudo apt install gcc-multilib g++-multilib
+sudo apt install gdb
+sudo apt install git
 sudo apt install libsqlite3-dev
 sudo apt install sqlitebrowswer
 curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh

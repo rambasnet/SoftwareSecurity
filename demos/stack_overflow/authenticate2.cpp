@@ -5,14 +5,14 @@ using namespace std;
 
 bool check_authentication(char *password) {
     char password_buffer[16];
-    bool auth_flag = 0;
+    bool auth_flag = false;
 
     strcpy(password_buffer, password);
 
     if(strcmp(password_buffer, "brillig") == 0)
-        auth_flag = 1;
+        auth_flag = true;
     if(strcmp(password_buffer, "outgrabe") == 0)
-        auth_flag = 1;
+        auth_flag = true;
 
     return auth_flag;
 }
