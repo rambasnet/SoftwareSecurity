@@ -27,6 +27,7 @@ sudo apt upgrade
 sudo apt install build-essential ccache
 sudo apt install gcc-multilib g++-multilib
 sudo apt install gdb
+sudo apt install gdbserver
 sudo apt install git
 sudo apt install libsqlite3-dev
 sudo apt install sqlitebrowswer
