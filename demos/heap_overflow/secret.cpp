@@ -5,7 +5,9 @@
 #include <fstream>
 #include <unistd.h> //getuid()
 #include <sys/types.h> // getuid()
+#include <filesystem>
 
+namespace fs = std::filesystem;
 using namespace std;
 
 void usage(char *prog_name, char *filename) {
@@ -40,6 +42,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
     fout << userid << "\n" << secret << endl;
+    fs::permissions(secret_file, fs::perms::group_read|fs::perms::others_read, fs::perm_options::remove);
     fout.close();
     cout << "Secret saved.\n";
     delete[] secret;

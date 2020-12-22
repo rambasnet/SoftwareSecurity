@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+using namespace std;
+
 // Custom user struct to store information about users
 struct User {
    int uid;
@@ -26,3 +29,4 @@ char *mgets(char* src);
 void change_username();
 void reset_credit(char *, User &);
 unsigned int get_random_number(int max);
+void rstrip(string &line);

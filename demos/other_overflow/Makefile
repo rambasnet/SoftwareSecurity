@@ -8,7 +8,7 @@ COMPILER = g++
 # -Wall : turns on most, but not  all, compiler warnings
 # -std=c++17 : uses c++17 standard
 # put all the required flags separated by space
-COMPILER_FLAGS = -g -Wall -m32 -fno-stack-protector -z execstack -no-pie
+COMPILER_FLAGS = -g -Wall -m32 -std=c++17 -fno-stack-protector -z execstack -no-pie
 
 # the build target executable program name of your choice
 PROGRAM_NAME = lucky7.exe # FIXME

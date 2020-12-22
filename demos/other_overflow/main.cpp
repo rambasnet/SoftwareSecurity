@@ -4,10 +4,10 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <stdlib.h>
-#include "lucky7.h"
 #include <unistd.h> //getuid()
 #include <sys/types.h> // getuid()
 #include <iostream>
+#include "lucky7.h"
 
 char DATAFILE[] = "/var/lucky7.data"; // File to store players data
 
@@ -17,7 +17,7 @@ using namespace std;
 User player;      // Player struct
 
 int main(int argc, char* argv[]) {
-   int choice;
+   int choice, last_game;
 
    if(not read_player_data(DATAFILE,  player)) // Try to read player data from file.
       register_new_player(DATAFILE, player);    // If there is no data, register a new player.
@@ -25,37 +25,37 @@ int main(int argc, char* argv[]) {
    bool quit = false;
    do {
       choice = get_choice(player);
-      switch(choice) {
-         case 1:
-            player.current_game = pick_a_number;
-            play_the_game();   // Play the game.
-            break;
-         case 2:               
-            player.current_game = lucky777;
-            play_the_game();   // Play the game.
-            break;
-         case 3:
-            player.current_game = lucky77777;
-            play_the_game();   // Play the game.
-            break;
-         case 4:
-            show_credits(player);
-            break;
-         case 5:
-            change_username();
-            update_player_data(DATAFILE, player);
-            printf("Your name has been changed.\n\n");
-            break;
-         case 6:
-            reset_credit(DATAFILE, player);
-            break;
-         default: // must be case 7
-            quit = true;
+      printf("%d %d\n", choice, last_game);
+      if (choice < 4) {
+         if (choice != last_game) {
+            switch(choice) {
+               case 1:
+                  player.current_game = pick_a_number;
+                  break;
+               case 2:               
+                  player.current_game = lucky777;
+                  break;
+               case 3:
+                  player.current_game = lucky77777;
+                  break;
+            }
+            last_game = choice;
+         }  
+         play_the_game();
       }
-      //cin.get();
-   } while(not quit);
+      else if (choice == 4)
+         show_credits(player);
+      else if (choice == 5) {
+         change_username();
+         update_player_data(DATAFILE, player);
+         printf("Your name has been changed.\n\n");
+       }
+      else if (choice == 6)
+         reset_credit(DATAFILE, player);
    
-   printf("\nThanks for playing! Bye.\n");
+      //cin.get();
+   } while(choice !=7 );
+   printf("\nThanks for playing! Good Bye.\n");
 }
 
 

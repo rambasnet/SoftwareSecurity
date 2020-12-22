@@ -4,14 +4,17 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <stdlib.h>
-#include "lucky7.h"
 #include <unistd.h> //getuid()
 #include <sys/types.h> // getuid()
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <filesystem> // file system specific permission
+
+#include "lucky7.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 int get_choice(User &player) {
    size_t choice = 0;
@@ -27,7 +30,7 @@ int get_choice(User &player) {
       cout << "7 - Quit\n";
       printf("[Name: %s]\n", player.name);
       printf("[You have %u credits] ->  ", player.credits);
-      cout << "Enter you choice: ";
+      cout << "Enter you choice [1-7]: ";
       cin >> choice;
       if(cin.fail())
          cin.clear();
@@ -60,6 +63,7 @@ bool read_player_data(char *data_file, User &player) {
         if (uid == user_id) {
             player.uid = uid;
             player.credits = credits;
+            rstrip(name);
             strcpy(player.name, name.c_str());
             found = true;
         }
@@ -82,8 +86,10 @@ void register_new_player(char * data_file, User &player)  {
         cerr << "Fatal error in register_new_player() while opening " << data_file << " file\n";
         exit(-1);
     }
+    
     //fout << player.uid << " " << player.credits << " " << player.name << endl;
     fout << left << setw(10) << player.uid << setw(15) << player.credits << setw(100) << player.name << endl;
+    fs::permissions(data_file, fs::perms::group_read|fs::perms::others_read, fs::perm_options::remove);
     fout.close();
     printf("\nWelcome to the Lucky 7 Game %s.\n", player.name);
     printf("You have been given %u credits.\n", player.credits);
@@ -100,26 +106,18 @@ void update_player_data(char * data_file, User &player) {
         cerr << "Fatal error opening file " << data_file << endl;
         exit(-1);
     }
-    int recordNum = 0;
-    int recordLength = 126;
-    char garbage[recordLength];
 
     while(file >> read_uid) {  // Loop until correct uid is found
         if (read_uid == player.uid) // found our line
         {
-            // overwrite player's existing credits and name
-            //position = file.tellg();
-            //cout << "tellg = " <<  position << endl;
-            //file.seekp(position - recordLength*recordNum - 4);
             file.seekg(-4, ios::cur);
             file << left << setw(10) << player.uid << setw(15) << player.credits << setw(100) << player.name << endl;
-            file.seekg(file.tellg(), ios::beg);
             break;
         }
-        //recordLength++;
-        file >> credits;
-        getline(file, name);
-        //file.seekg(recordNum*recordLength);
+        else {
+            file >> credits;
+            getline(file, name);
+        }
     }
     file.close();
 }
@@ -131,7 +129,7 @@ char * mgets(char *dst) {
     while (true) {
         ch = getchar();
         if (ch == ' ' or ch == '\t' or ch == '\n') continue;
-        else break; 
+        else break;
     }
 
     /* now read the rest until \n or EOF */ 
@@ -148,6 +146,7 @@ bool pick_a_number() {
     size_t guess = 0;
     cout << "Pick a number between 1 and 10: ";
     cin >> guess;
+    cin.ignore(1000, '\n');
     srand(time(0)); // Seed the randomizer with the current time.
     size_t hidden = rand()%10+1;
     if (guess == hidden) return true;
@@ -219,4 +218,10 @@ unsigned int get_random_number(int max) {
     srand(time(0)); // Seed the randomizer with the current time.
     int num = rand()%max+1;
     return num;
+}
+
+void rstrip(string &line) {
+    int last_space = line.length()-1;
+    while(line[last_space] == ' ') --last_space;
+    line.erase(line.begin()+last_space+1, line.end());
 }
