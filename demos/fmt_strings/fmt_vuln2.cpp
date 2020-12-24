@@ -10,7 +10,6 @@ void badfunction(char *data) {
     printf("\ninput is @ 0x%08x\n", &input);
     //unsigned int ebp asm("ebp");
     //printf("return address @ 0x%08x\n", (ebp+4));
-    // would be be nice to be able to print value at return add
 }
 
 int main(int argc, char* argv[]) {
