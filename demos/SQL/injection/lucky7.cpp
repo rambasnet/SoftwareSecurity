@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <filesystem> // file system specific permission
 
-#include "lucky7.h"
+#include "lucky7.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;

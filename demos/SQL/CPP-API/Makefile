@@ -21,7 +21,7 @@ CPP_FILES =  sqlite_demo.cpp # FIXME
 # then make a single binary program
 build:
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
-	$(COMPILER) -o $(PROGRAM_NAME) *.o -l sqlite3
+	$(COMPILER) -o $(PROGRAM_NAME) *.o -lsqlite3
 
 # rule to run the program
 # make run to execute this rule

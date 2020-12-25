@@ -9,7 +9,15 @@
 
 using namespace std;
 
-static int callback(void *notUsed, int argc, char *argv[], char *colName[]) {
+/*
+data - 4th argument in sqlite3_exec function
+argc - no. of columns in each row
+argv[] - data retrieved for each row
+colName[] - column names for each row
+*/ 
+static int callback(void *data, int argc, char *argv[], char *colName[]) {
+   // cout << *(int *)data << endl;
+
    for(int i=0; i<argc; i++) {
       printf("%s = %s\n", colName[i], argv[i] ? argv[i] : "NULL");
    }
@@ -63,7 +71,9 @@ void readRecords(sqlite3 *db) {
     char *errMsg;
     int userid = getuid();
     string sql = "SELECT * FROM myTable WHERE uid = " + to_string(userid) + ";";
-    if (sqlite3_exec(db, sql.c_str(), callback, 0, &errMsg) == SQLITE_OK)
+    int * num = new int;
+    *num = 10;
+    if (sqlite3_exec(db, sql.c_str(), callback, num, &errMsg) == SQLITE_OK)
         cout << "Records retrievied successfully...\n";
     else
         printf("SQL error: %s\n", errMsg);

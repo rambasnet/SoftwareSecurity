@@ -16,6 +16,7 @@
 - sqlite3 C/C++ library
 - sqlitebrowser
 - pwntools
+- boost C++ libraries
 
 # Install Required Tools
 - update Linux and install tools
@@ -24,7 +25,9 @@
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install build-essential ccache
+sudo apt install build-essential
+sudo apt install ccache
+sudo apt install libboost-all-dev
 sudo apt install gcc-multilib g++-multilib
 sudo apt install gdb
 sudo apt install gdbserver

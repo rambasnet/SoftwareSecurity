@@ -7,7 +7,8 @@
 #include <unistd.h> //getuid()
 #include <sys/types.h> // getuid()
 #include <iostream>
-#include "lucky7.h"
+#include "lucky7.hpp"
+#include "security.hpp"
 
 char DATAFILE[] = "/var/lucky7.txt"; // File to store players data
 
@@ -17,6 +18,9 @@ using namespace std;
 User player;      // Player struct
 
 int main(int argc, char* argv[]) {
+   if (argc == 2 and string(argv[1]) == "test")
+      password_test();
+      
    int choice, last_game;
 
    if(not read_player_data(DATAFILE,  player)) // Try to read player data from file.
