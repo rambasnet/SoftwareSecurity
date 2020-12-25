@@ -7,10 +7,16 @@
 #include <unistd.h> //getuid()
 #include <sys/types.h> // getuid()
 #include <iostream>
+#include <sqlite3.h>
+
 #include "lucky7.hpp"
 #include "security.hpp"
+#include "db.hpp"
 
-char DATAFILE[] = "/var/lucky7.txt"; // File to store players data
+char DB_NAME[] = "/var/lucky7.db"; // File to store players data
+char DATAFILE[] = "/var/lucky7.txt";
+
+bool AUTHENTICATED = false;
 
 using namespace std;
 
@@ -18,14 +24,31 @@ using namespace std;
 User player;      // Player struct
 
 int main(int argc, char* argv[]) {
-   if (argc == 2 and string(argv[1]) == "test")
-      password_test();
-      
    int choice, last_game;
+   sqlite3 *db;
+
+   if (argc == 2 and string(argv[1]) == "test") {
+      password_test();
+      return 0;
+   }
+
+   if (sqlite3_open(DB_NAME, &db) == SQLITE_OK)
+        cerr << "Database opened successfully...\n";
+    else {
+        cerr << "Failed to open database!\n"
+            << "Make sure program is root setuid.\n";
+        exit(1);
+   }
+
+   setup_db(db);
+
+   
+   
 
    if(not read_player_data(DATAFILE,  player)) // Try to read player data from file.
       register_new_player(DATAFILE, player);    // If there is no data, register a new player.
 
+   /*
    do {
       choice = get_choice(player);
       if (choice < 4) {
@@ -71,6 +94,7 @@ int main(int argc, char* argv[]) {
    
       //cin.get();
    } while(choice !=7 );
+   */
    printf("\nThanks for playing! Good Bye.\n");
 }
 

@@ -5,7 +5,7 @@ using namespace std;
 
 // Custom user struct to store information about users
 struct User {
-   int uid;
+   char uid[100];
    int credits;
    char name[100];
    int (*current_game) ();

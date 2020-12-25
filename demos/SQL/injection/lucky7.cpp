@@ -9,12 +9,14 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <filesystem> // file system specific permission
+//#include <filesystem> // file system specific permission
+#include <sqlite3.h>
 
 #include "lucky7.hpp"
+#include "security.hpp"
 
 using namespace std;
-namespace fs = std::filesystem;
+//namespace fs = std::filesystem;
 
 int get_choice(User &player) {
    size_t choice = 0;
@@ -28,9 +30,12 @@ int get_choice(User &player) {
       cout << "5 - Change your user name\n";
       cout << "6 - Reset your account at 500 credits\n";
       cout << "7 - Quit\n";
+      cout << setw(30) << setfill('=') << '\n';
       printf("[Name: %s]\n", player.name);
       printf("[You have %u credits] ->  ", player.credits);
+      cout << setw(30) << setfill('=') << '\n';
       cout << "Enter your choice [1-7]: ";
+      cout << setw(30) << setfill('~') << '\n';
       cin >> choice;
       if(cin.fail())
          cin.clear();
@@ -42,84 +47,16 @@ int get_choice(User &player) {
    } while(true);
 }
 
-// This function reads the player data for the current uid
-// from the file. It returns false if it is unable to find player
-// data for the current uid.
-bool read_player_data(char *data_file, User &player) { 
-    int user_id;
-
-    user_id = getuid();
-    int uid, credits;
-    string name;
-    ifstream fin(data_file);
-    if (!fin)
-        return false;
-    
-    bool found = false;
-    while(fin >> uid and not found) {
-        fin >> credits;
-        fin >> ws;
-        getline(fin, name);
-        if (uid == user_id) {
-            player.uid = uid;
-            player.credits = credits;
-            rstrip(name);
-            strcpy(player.name, name.c_str());
-            found = true;
-        }
-    }
-    fin.close();
-    return found;
-}
-
 // This is the new user registration function.
 // It will create a new player account and append it to the file
 void register_new_player(char * data_file, User &player)  { 
-    cout << "-=-={ New Player Registration }=-=-\n";
-    cout << "Enter your name: ";
-    mgets(player.name);
-    player.uid = getuid();
-    player.credits = 500;
-
-    ofstream fout(data_file, ios::app);
-    if(not fout) {
-        cerr << "Fatal error in register_new_player() while opening " << data_file << " file\n";
-        exit(-1);
-    }
     
-    //fout << player.uid << " " << player.credits << " " << player.name << endl;
-    fout << left << setw(10) << player.uid << setw(15) << player.credits << setw(100) << player.name << endl;
-    fs::permissions(data_file, fs::perms::group_read|fs::perms::others_read, fs::perm_options::remove);
-    fout.close();
-    printf("\nWelcome to the Lucky 7 Game %s.\n", player.name);
-    printf("You have been given %u credits.\n", player.credits);
 }
 
 // This function writes the current player data to the file.
 // It is used primarily for updating the credits after games.
 void update_player_data(char * data_file, User &player) {
-    int read_uid, credits;
-    string name;
-    fstream file(data_file, ios::out|ios::in);
-    streampos position;
-    if (!file) {
-        cerr << "Fatal error opening file " << data_file << endl;
-        exit(-1);
-    }
-
-    while(file >> read_uid) {  // Loop until correct uid is found
-        if (read_uid == player.uid) // found our line
-        {
-            file.seekg(-4, ios::cur);
-            file << left << setw(10) << player.uid << setw(15) << player.credits << setw(100) << player.name << endl;
-            break;
-        }
-        else {
-            file >> credits;
-            getline(file, name);
-        }
-    }
-    file.close();
+    
 }
 
 char * mgets(char *dst) {
