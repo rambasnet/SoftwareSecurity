@@ -14,7 +14,7 @@ COMPILER_FLAGS = -g -Wall -std=c++17 -fno-stack-protector -z execstack -no-pie
 PROGRAM_NAME = lucky7.exe # FIXME
 
 # list all .cpp files separated by space; files must exist!
-CPP_FILES = lucky7.cpp main.cpp security.cpp # FIXME
+CPP_FILES = lucky7.cpp main.cpp security.cpp db.cpp # FIXME
 
 # make build rule/default rule that'll be run when we run "make" or make build
 # first compile each file to object file

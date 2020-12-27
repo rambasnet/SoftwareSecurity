@@ -14,6 +14,7 @@
 
 #include "lucky7.hpp"
 #include "security.hpp"
+#include "db.hpp"
 
 using namespace std;
 //namespace fs = std::filesystem;
@@ -21,9 +22,10 @@ using namespace std;
 int get_menu_choice() {
     int choice = 0;
     do {
+        cout << setw(40) << setfill('=') << "" << endl;
         cout << "-=[ Main Menu Options ]=-\n"
             << "1 - Login \n"
-            << "2 - Register\n"
+            << "2 - Register New Player\n"
             << "3 - Exit\n"
             << "Enter your choice [1-3]: ";
         cin >> choice;
@@ -44,20 +46,22 @@ int get_game_choice(User &player) {
    size_t choice = 0;
    do{
       //system("clear");
+      cout << setw(50) << setfill('=') << "" << endl;
       cout << "-=[ Lucky 7 Game Menu ]=-\n";
       cout << "1 - Play Lucky 7 game\n";
       cout << "2 - Play Lucky 777 game\n";
       cout << "3 - Play Lucky 77777 game\n";
       cout << "4 - View your total credits\n";
-      cout << "5 - Change your user name\n";
-      cout << "6 - Reset your account at 500 credits\n";
+      cout << "5 - Change name\n";
+      cout << "6 - Reset account at 500 credits\n";
       cout << "7 - Logout\n";
-      cout << setw(30) << setfill('=') << '\n';
+      cout << setw(50) << setfill('~') << "" << endl; 
       printf("[Name: %s]\n", player.name);
       printf("[You have %u credits]\n", player.credits);
-      cout << setw(30) << setfill('=') << '\n';
+      cout << setw(50) << setfill('=') << "" << endl; 
       cout << "Enter your choice [1-7]: ";
       cin >> choice;
+      cin.ignore(1000, '\n');
       if(cin.fail())
          cin.clear();
 
@@ -68,11 +72,12 @@ int get_game_choice(User &player) {
    } while(true);
 }
 
-void show_credits(const User & player) {
-    cout << setw(30) << setfill('=') << "\n";
+void show_credits(sqlite3 *db, User &player) {
+    get_credits(db, player);
+    cout << setw(50) << setfill('=') << "\n";
     cout << "Name: " << player.name << endl;
     cout << "Credits: " << player.credits << endl;
-    cout << setw(20) << "\n";
+    cout << setw(50) << "\n";
     cout << setfill(' ');
 }
 

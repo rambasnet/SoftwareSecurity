@@ -8,6 +8,7 @@
 #include <sys/types.h> // getuid()
 #include <iostream>
 #include <sqlite3.h>
+#include <filesystem>
 
 #include "lucky7.hpp"
 #include "security.hpp"
@@ -18,6 +19,8 @@ char DB_NAME[] = "/var/lucky7.db"; // File to store players data
 bool AUTHENTICATED = false;
 
 using namespace std;
+namespace fs = std::filesystem;
+
 
 // Global variables
 User player;      // Player struct
@@ -25,6 +28,7 @@ sqlite3 *db;
 
 void game();
 void init();
+void logout();
 
 int main(int argc, char* argv[]) {
    int option;
@@ -40,7 +44,12 @@ int main(int argc, char* argv[]) {
       option = get_menu_choice();
       if (option == 1) {
          if (authenticate(db, player))
-            game();
+            if (strcmp(player.role, "admin") == 0) {
+               show_database(db);
+               logout();
+            }
+            else 
+               game();
          else
             cerr << "Login failed.\nUsername or password not correct.\n";
       }
@@ -80,16 +89,19 @@ void jackpot1M() {
 bool has_credits() {
    if (player.current_game == lucky7 and player.credits >= 10) {
       player.credits -= 10;
+      update_player_credits(db, player);
       return true;
    }
 
    if (player.current_game == lucky777 and player.credits >= 50) {
       player.credits -= 50;
+      update_player_credits(db, player);
       return true;
    }
 
    if (player.current_game == lucky77777 and player.credits >= 100) {
       player.credits -= 100;
+      update_player_credits(db, player);
       return true;
    }
 
@@ -127,9 +139,10 @@ void play_the_game() {
 }
 
 void change_username() {
-   printf("\nChange user name\n");
-   cout << "Enter your new name:\n";
+   printf("\nChange name\n");
+   cout << "Enter your full name:\n";
    mgets(player.name);
+   update_name(db, player);
 }
 
 void game() {
@@ -168,15 +181,18 @@ void game() {
          play_the_game();
       }
       else if (choice == 4)
-         show_credits(player);
-      else if (choice == 5)
+         show_credits(db, player);
+      else if (choice == 5) {
          change_username();
+      }
       else if (choice == 6)
          player.credits = 500;
 
-      update_player_data(db, player);
+      
       //cin.get();
    } while(choice !=7 );
+   logout();
+   player.credits = 0;
 }
 
 void init() {
@@ -187,5 +203,14 @@ void init() {
             << "Make sure program is root setuid.\n";
         exit(1);
    }
+   fs::permissions(DB_NAME, fs::perms::group_read|fs::perms::others_read, fs::perm_options::remove);
    setup_db(db);
+}
+
+void logout() {
+   strcpy(player.uid, "");
+   strcpy(player.role, "");
+   strcpy(player.name, "");
+   player.credits = 0;
+   player.current_game = nullptr;
 }
