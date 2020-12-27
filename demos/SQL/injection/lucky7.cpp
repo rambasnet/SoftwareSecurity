@@ -18,7 +18,29 @@
 using namespace std;
 //namespace fs = std::filesystem;
 
-int get_choice(User &player) {
+int get_menu_choice() {
+    int choice = 0;
+    do {
+        cout << "-=[ Main Menu Options ]=-\n"
+            << "1 - Login \n"
+            << "2 - Register\n"
+            << "3 - Exit\n"
+            << "Enter your choice [1-3]: ";
+        cin >> choice;
+        cin.ignore(1000, '\n');
+        if(cin.fail())
+            cin.clear();
+
+        if ((choice < 1) || (choice > 3))
+            cerr << "The number " << choice << " is an invalid selection.\n\n";
+        else 
+            return choice;
+
+    }while(true);
+
+}
+
+int get_game_choice(User &player) {
    size_t choice = 0;
    do{
       //system("clear");
@@ -29,13 +51,12 @@ int get_choice(User &player) {
       cout << "4 - View your total credits\n";
       cout << "5 - Change your user name\n";
       cout << "6 - Reset your account at 500 credits\n";
-      cout << "7 - Quit\n";
+      cout << "7 - Logout\n";
       cout << setw(30) << setfill('=') << '\n';
       printf("[Name: %s]\n", player.name);
-      printf("[You have %u credits] ->  ", player.credits);
+      printf("[You have %u credits]\n", player.credits);
       cout << setw(30) << setfill('=') << '\n';
       cout << "Enter your choice [1-7]: ";
-      cout << setw(30) << setfill('~') << '\n';
       cin >> choice;
       if(cin.fail())
          cin.clear();
@@ -45,38 +66,6 @@ int get_choice(User &player) {
       else 
          return choice;
    } while(true);
-}
-
-// This is the new user registration function.
-// It will create a new player account and append it to the file
-void register_new_player(char * data_file, User &player)  { 
-    
-}
-
-// This function writes the current player data to the file.
-// It is used primarily for updating the credits after games.
-void update_player_data(char * data_file, User &player) {
-    
-}
-
-char * mgets(char *dst) {
-    char *ptr = dst;
-    int ch; 
-	/* skip leading white spaces */ 
-    while (true) {
-        ch = getchar();
-        if (ch == ' ' or ch == '\t' or ch == '\n') continue;
-        else break;
-    }
-
-    /* now read the rest until \n or EOF */ 
-    while (true) {
-        *(ptr++) = ch; 
-        ch = getchar();
-        if (ch == '\n' or ch == EOF) break;
-    }
-    *(ptr) = 0;
-    return dst;
 }
 
 void show_credits(const User & player) {
@@ -151,19 +140,8 @@ int lucky77777() {
     else return 0;
 }
 
-void reset_credit(char * datafile, User & player) {
-   player.credits = 500;
-   update_player_data(datafile, player);
-}
-
 unsigned int get_random_number(int max) {
     srand(time(0)); // Seed the randomizer with the current time.
     int num = rand()%max+1;
     return num;
-}
-
-void rstrip(string &line) {
-    int last_space = line.length()-1;
-    while(line[last_space] == ' ') --last_space;
-    line.erase(line.begin()+last_space+1, line.end());
 }

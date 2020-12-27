@@ -14,7 +14,6 @@
 #include "db.hpp"
 
 char DB_NAME[] = "/var/lucky7.db"; // File to store players data
-char DATAFILE[] = "/var/lucky7.txt";
 
 bool AUTHENTICATED = false;
 
@@ -22,79 +21,37 @@ using namespace std;
 
 // Global variables
 User player;      // Player struct
+sqlite3 *db;
+
+void game();
+void init();
 
 int main(int argc, char* argv[]) {
-   int choice, last_game;
-   sqlite3 *db;
-
+   int option;
+   
    if (argc == 2 and string(argv[1]) == "test") {
       password_test();
       return 0;
    }
+   // initialize database
+   init();
 
-   if (sqlite3_open(DB_NAME, &db) == SQLITE_OK)
-        cerr << "Database opened successfully...\n";
-    else {
-        cerr << "Failed to open database!\n"
-            << "Make sure program is root setuid.\n";
-        exit(1);
-   }
-
-   setup_db(db);
-
-   
-   
-
-   if(not read_player_data(DATAFILE,  player)) // Try to read player data from file.
-      register_new_player(DATAFILE, player);    // If there is no data, register a new player.
-
-   /*
    do {
-      choice = get_choice(player);
-      if (choice < 4) {
-         if (choice != last_game) {
-            switch(choice) {
-               case 1:
-                  cout << "\n~*~*~ Lucky 7 ~*~*~\nCosts 10 credits to play this game.\n"
-                  << "Machine will generate 1 random numbers each between 1 and 9.\n"
-                  << "If the number is 7, you win a jackpot of 10 THOUSAND\n"
-                  << "Otherwise, you lose.\n" << flush << endl;
-                  player.current_game = lucky7;
-                  break;
-               case 2:
-                  cout << "\n~*~*~ Lucky 777 ~*~*~\nCosts 50 credits to play this game.\n"
-                  << "Machine will generate 3 random numbers each between 1 and 9.\n"
-                  << "If all 3 numbers are 7, you win a jackpot of 100 THOUSAND\n"
-                  << "If all 3 numbers match, you win 10 THOUSAND\n"
-                  << "Otherwise, you lose.\n Enter to continue..." << flush << endl;               
-                  player.current_game = lucky777;
-                  break;
-               case 3:
-                  cout << "\n~*~*~ Lucky 77777 ~*~*~\nCosts 100 credits to play this game.\n"
-                  << "Machine will generate 5 random numbers each between 1 and 9.\n"
-                  << "If all 5 numbers are 7, you win a jackpot of 1 MILLION\n"
-                  << "If all 5 numbers match, you win 100 THOUSAND\n"
-                  << "Otherwise, you lose.\n Enter to continue..." << flush << endl;
-                  player.current_game = lucky77777;
-                  break;
-            }
-            last_game = choice;
-         }  
-         play_the_game();
+      option = get_menu_choice();
+      if (option == 1) {
+         if (authenticate(db, player))
+            game();
+         else
+            cerr << "Login failed.\nUsername or password not correct.\n";
       }
-      else if (choice == 4)
-         show_credits(player);
-      else if (choice == 5) {
-         change_username();
-         update_player_data(DATAFILE, player);
-         printf("Your name has been changed.\n\n");
-       }
-      else if (choice == 6)
-         reset_credit(DATAFILE, player);
-   
-      //cin.get();
-   } while(choice !=7 );
-   */
+      else if (option == 2) {
+         if (register_player(db, player)) {
+            cerr << "Registration successful!\n"
+               << "Login to start playing...\n";
+         }
+      }
+      else break;
+   }while (true);
    printf("\nThanks for playing! Good Bye.\n");
 }
 
@@ -142,7 +99,7 @@ bool has_credits() {
 // This function contains a loop to allow the current game to be
 // played again. It also writes the new credit totals to file
 // after each game is played.
-void play_the_game() { 
+void play_the_game() {
    char again;
    int result;
    do {
@@ -162,7 +119,7 @@ void play_the_game() {
          cout << "Sorry! Better luck next time...\n";
 
       printf("\nYou have %u credits\n", player.credits);
-      update_player_data(DATAFILE, player); // Write the new credit total to file.
+      //update_player_data(DATAFILE, player); // Write the new credit total to file.
       printf("Would you like to play again? [y/n]: ");
       cin >> again;
       cin.ignore(100, '\n');
@@ -173,4 +130,62 @@ void change_username() {
    printf("\nChange user name\n");
    cout << "Enter your new name:\n";
    mgets(player.name);
+}
+
+void game() {
+   int choice, last_game;
+   do {
+      choice = get_game_choice(player);
+      if (choice < 4) {
+         if (choice != last_game) {
+            switch(choice) {
+               case 1:
+                  cout << "\n~*~*~ Lucky 7 ~*~*~\nCosts 10 credits to play this game.\n"
+                  << "Machine will generate 1 random numbers each between 1 and 9.\n"
+                  << "If the number is 7, you win a jackpot of 10 THOUSAND\n"
+                  << "Otherwise, you lose.\n" << flush << endl;
+                  player.current_game = lucky7;
+                  break;
+               case 2:
+                  cout << "\n~*~*~ Lucky 777 ~*~*~\nCosts 50 credits to play this game.\n"
+                  << "Machine will generate 3 random numbers each between 1 and 9.\n"
+                  << "If all 3 numbers are 7, you win a jackpot of 100 THOUSAND\n"
+                  << "If all 3 numbers match, you win 10 THOUSAND\n"
+                  << "Otherwise, you lose.\n Enter to continue..." << flush << endl;               
+                  player.current_game = lucky777;
+                  break;
+               case 3:
+                  cout << "\n~*~*~ Lucky 77777 ~*~*~\nCosts 100 credits to play this game.\n"
+                  << "Machine will generate 5 random numbers each between 1 and 9.\n"
+                  << "If all 5 numbers are 7, you win a jackpot of 1 MILLION\n"
+                  << "If all 5 numbers match, you win 100 THOUSAND\n"
+                  << "Otherwise, you lose.\n Enter to continue..." << flush << endl;
+                  player.current_game = lucky77777;
+                  break;
+            }
+            last_game = choice;
+         }  
+         play_the_game();
+      }
+      else if (choice == 4)
+         show_credits(player);
+      else if (choice == 5)
+         change_username();
+      else if (choice == 6)
+         player.credits = 500;
+
+      update_player_data(db, player);
+      //cin.get();
+   } while(choice !=7 );
+}
+
+void init() {
+   if (sqlite3_open(DB_NAME, &db) == SQLITE_OK)
+        cerr << "Database opened successfully...\n";
+    else {
+        cerr << "Failed to open database!\n"
+            << "Make sure program is root setuid.\n";
+        exit(1);
+   }
+   setup_db(db);
 }

@@ -33,7 +33,7 @@ string uuid() {
     return iss.str();
 }
 
-string hash_password(const string password, string salt="", const int rounds=10000) {
+string hash_password(const string password, string salt, const int rounds) {
     if (salt == "") 
         salt = uuid(); // randomanly generate salt
     string hashed_password = password;

@@ -12,9 +12,8 @@ struct User {
 };
 
 // function prototypes
-bool read_player_data(char *, User &);
-void register_new_player(char *, User &);
-void update_player_data(char *data_file, User &player);
+int get_menu_choice();
+int get_game_choice(User &);
 void show_credits(const User &);
 void jackpot();
 void jackpot777();
@@ -24,9 +23,5 @@ int lucky7();
 int lucky777();
 int lucky77777();
 void fatal(char *);
-int get_choice(User &);
-char *mgets(char* src);
-void change_username();
 void reset_credit(char *, User &);
 unsigned int get_random_number(int max);
-void rstrip(string &line);

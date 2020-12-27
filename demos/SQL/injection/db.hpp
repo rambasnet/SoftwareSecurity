@@ -3,34 +3,41 @@
 #include <string>
 #include <iostream>
 #include <tuple>
+#include <vector>
+#include <cstring>
+
+#include "security.hpp"
+
 using namespace std;
 
 // prototypes
-static int callback_select(void *, int, char**, char**);
 void execute_sql(sqlite3 *, string, int (* )(void*, int, char**, char**));
 void setup_db(sqlite3 *);
-
-
-static int callback_select(void *data, int colCount, char *row[], char *colName[]) {
-   for(int i=0; i<colCount; i++) {
-      printf("%s = %s\n", colName[i], row[i] ? row[i] : "NULL");
-   }
-   printf("\n");
-   return 0;
-}
+bool register_player(sqlite3 *, User &);
+void update_player_data(sqlite3 *, User &);
+char *mgets(char* src);
+void change_username();
 
 static int callback(void* data, int colCount, char**row, char** colName) {
-    (vector< vector<string> >) data;
+    vector<string> record;
+    for(int i=0; i<colCount; i++) {
+        record.push_back(row[i]);
+    }
+    ((vector< vector<string> > *)data)->push_back(record);
+    return 0;
 }
 
 static int callback_dummy(void * data, int colCount, char *row[], char *colName[]) {
     return 0;
 }
 
-void execute_sql(sqlite3 *db, string sql, int (* callback)(void*, int, char**, char**), void * data) {
+bool execute_sql(sqlite3 *db, string sql, int (* callback)(void*, int, char**, char**), void * data) {
     char *errMsg;
-    if (sqlite3_exec(db, sql.c_str(), callback, data, &errMsg) != SQLITE_OK)
+    if (sqlite3_exec(db, sql.c_str(), callback, data, &errMsg) != SQLITE_OK) {
         cerr << "SQL error: " << errMsg << "...\n";
+        return false;
+    }
+    return true;
 }
 
 void setup_db(sqlite3 *db) {
@@ -40,7 +47,7 @@ void setup_db(sqlite3 *db) {
                 password TEXT, \
                 PRIMARY KEY (uid) \
                 );";
-    execute_sql(db, sql, callback_dummy);
+    execute_sql(db, sql, callback, 0);
 
     sql = "CREATE TABLE IF NOT EXISTS Player ("
                 "uid TEXT, "
@@ -48,16 +55,8 @@ void setup_db(sqlite3 *db) {
                 "name TEXT, "
                 "PRIMARY KEY (uid) "
                 ");";
-    execute_sql(db, sql, callback_dummy);
+    execute_sql(db, sql, callback, 0);
     printf("Database setup complete...\n");
-}
-
-// This function reads the player data for the current uid
-// from the file. It returns false if it is unable to find player
-// data for the current uid.
-bool read_player_data(sqlite3 *db, User &player) { 
-    
-    return false;
 }
 
 bool authenticate(sqlite3 *db, User &player) {
@@ -68,15 +67,85 @@ bool authenticate(sqlite3 *db, User &player) {
     getline(cin, password);
     sql = "SELECT uid from Account WHERE username = '" + username 
             + "' and password = '" + password + "';";
-    bool authenticated = false;
     // define lambda function with captures
-    tuple<string, bool> data;
-    auto callback = [](void * data, int colCount, char** row, char** colName) {
-        for(int i=0; i<colCount; i++) {
-            uid = row[i];
-            authenticated = true;
-        }
+    // cout << sql << endl;
+    vector<vector<string> > data;
+    char * errMsg;
+    static auto get_uid = [](void* data, int colCount, char** row, char** colName) {
+        for(int i=0; i<colCount; i++)
+            *(string *)data = string(row[0]);
+        
         return 0;
     };
-    execute_sql(db, sql, int (* )callback);
+
+    if (sqlite3_exec(db, sql.c_str(), get_uid, &uid, &errMsg) != SQLITE_OK) {
+        cerr << "SQL error: " << errMsg << "...\n";
+        return false;
+    }
+
+    sql = "SELECT credits, name from Player WHERE uid = '" + uid + "';";
+    static auto get_player = [](void * data, int colCount, char** row, char** rowName) {
+        User * player = (User *)data;
+        player->credits = atoi(row[0]);
+        strcpy(player->name, row[1]);
+        return 0;
+    };
+
+    if (sqlite3_exec(db, sql.c_str(), get_player, &player, &errMsg) != SQLITE_OK) {
+        cerr << "SQL error: " << errMsg << "...\n";
+        return false;
+    }
+    return true;
+}
+
+bool register_player(sqlite3 *db, User &player) {
+    string uid = uuid();
+    string username, password, name;
+    cout << "-=-={ New Player Registration }=-=-\n";
+    cout << "Username: ";
+    getline(cin, username);
+    cout << "Password: ";
+    getline(cin, password);
+    cout << "Full name: ";
+    getline(cin, name);
+    string hashed_password = hash_password(password);
+    string sql = "INSERT INTO Account (uid, username, password) VALUES ( ";
+    sql += "'" + uid + "', '" + username + "', '" + password + "');";
+    if (execute_sql(db, sql, callback, 0)) {
+        sql = "INSERT INTO Player (uid, credits, name) VALUES (";
+        sql += "'" + uid + "', '500', '" + name + "');";
+        if(execute_sql(db, sql, callback, 0)) {
+            strcpy(player.uid, uid.c_str());
+            player.credits = 500;
+            strcpy(player.name, name.c_str());
+            return true;
+        }
+    }
+    return false;
+}
+
+char * mgets(char *dst) {
+    char *ptr = dst;
+    int ch; 
+	/* skip leading white spaces */ 
+    while (true) {
+        ch = getchar();
+        if (ch == ' ' or ch == '\t' or ch == '\n') continue;
+        else break;
+    }
+
+    /* now read the rest until \n or EOF */ 
+    while (true) {
+        *(ptr++) = ch; 
+        ch = getchar();
+        if (ch == '\n' or ch == EOF) break;
+    }
+    *(ptr) = 0;
+    return dst;
+}
+
+void update_player_data(sqlite3 *db, User &player) {
+    string sql = "UPDATE Account set name = '" + string(player.name) + "', ";
+    sql += "credits = " + to_string(player.credits) + ";";
+    execute_sql(db, sql, callback_dummy, 0);
 }

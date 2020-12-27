@@ -42,36 +42,6 @@ int get_choice(User &player) {
    } while(true);
 }
 
-// This function reads the player data for the current uid
-// from the file. It returns false if it is unable to find player
-// data for the current uid.
-bool read_player_data(char *data_file, User &player) { 
-    int user_id;
-
-    user_id = getuid();
-    int uid, credits;
-    string name;
-    ifstream fin(data_file);
-    if (!fin)
-        return false;
-    
-    bool found = false;
-    while(fin >> uid and not found) {
-        fin >> credits;
-        fin >> ws;
-        getline(fin, name);
-        if (uid == user_id) {
-            player.uid = uid;
-            player.credits = credits;
-            rstrip(name);
-            strcpy(player.name, name.c_str());
-            found = true;
-        }
-    }
-    fin.close();
-    return found;
-}
-
 // This is the new user registration function.
 // It will create a new player account and append it to the file
 void register_new_player(char * data_file, User &player)  { 
