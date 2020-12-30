@@ -39,6 +39,7 @@ bash Miniconda.sh # pick defaults; python 3 is installed!
 conda update conda
 conda install notebook # jupyter notebook
 conda install -c conda-forge xeus-cling #c++ kernel
+pip install ptpyton # better python REPL for terminal
 ```
 
 # Play with Notebooks
