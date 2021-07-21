@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
 
    do {
       choice = get_choice(player);
+
       if (choice < 4) {
          if (choice != last_game) {
             switch(choice) {
@@ -61,7 +62,7 @@ int main(int argc, char* argv[]) {
          change_username();
          update_player_data(DATAFILE, player);
          printf("Your name has been changed.\n\n");
-       }
+      }
       else if (choice == 6)
          reset_credit(DATAFILE, player);
    
@@ -92,23 +93,19 @@ void jackpot1M() {
    player.credits += 1000000;
 }
 
-bool has_credits() {
+void deduct_credits() {
+   printf("\n[DEBUG] current_game pointer 0x%08x\n", (unsigned int)player.current_game);
    if (player.current_game == lucky7 and player.credits >= 10) {
       player.credits -= 10;
-      return true;
    }
 
    if (player.current_game == lucky777 and player.credits >= 50) {
       player.credits -= 50;
-      return true;
    }
 
    if (player.current_game == lucky77777 and player.credits >= 100) {
       player.credits -= 100;
-      return true;
    }
-
-   return false;
 }
 
 // This function contains a loop to allow the current game to be
@@ -118,13 +115,15 @@ void play_the_game() {
    char again;
    int result;
    do {
-      if (not has_credits()) {
+
+      if (player.credits < 10) {
          cout << "Sorry, you're out of credit.\nReset your credit to 500 to play again\n";
          break;
       }
-      printf("\n[DEBUG] current_game pointer 0x%08x\n", player.current_game);
-      result = player.current_game();
-      if( result == 1) // if won, give jackport
+      deduct_credits();
+
+      result = player.current_game(); // call current_game function ptr
+      if( result == 1) // if won, give jackpot
          jackpot10K();
       else if (result == 2)
          jackpot100K();
@@ -136,8 +135,10 @@ void play_the_game() {
       printf("\nYou have %u credits\n", player.credits);
       update_player_data(DATAFILE, player); // Write the new credit total to file.
       printf("Would you like to play again? [y/n]: ");
+      //selection = '\n';
+      cin >> ws; // read and ignore all the whitespaces
       cin >> again;
-      cin.ignore(100, '\n');
+      
    } while(again == 'y' or again == 'Y');
 }
 

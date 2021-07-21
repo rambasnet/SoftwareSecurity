@@ -17,7 +17,7 @@ using namespace std;
 namespace fs = std::filesystem;
 
 int get_choice(User &player) {
-   size_t choice = 0;
+   int choice = 0;
    do{
       //system("clear");
       cout << "-=[ Lucky 7 Game Menu ]=-\n";
@@ -32,14 +32,14 @@ int get_choice(User &player) {
       printf("[You have %u credits] ->  ", player.credits);
       cout << "Enter your choice [1-7]: ";
       cin >> choice;
-      if(cin.fail())
-         cin.clear();
-
+    
       if ((choice < 1) || (choice > 7))
          cerr << "The number " << choice << " is an invalid selection.\n\n";
       else 
          return choice;
+
    } while(true);
+   
 }
 
 // This is the new user registration function.
@@ -47,7 +47,7 @@ int get_choice(User &player) {
 void register_new_player(char * data_file, User &player)  { 
     cout << "-=-={ New Player Registration }=-=-\n";
     cout << "Enter your name: ";
-    mgets(player.name);
+    mgets(player.name); // get player's name
     player.uid = getuid();
     player.credits = 500;
 
@@ -92,6 +92,40 @@ void update_player_data(char * data_file, User &player) {
     file.close();
 }
 
+// This function reads the current player data from db file.
+bool read_player_data(char * data_file, User &player) {
+    int uid, read_uid, credits;
+    string name;
+    ifstream fin(data_file);
+
+    uid = getuid(); // get loggedin user's id
+    bool found = false;
+    if (not fin) {
+        cerr << "Database file doesn't exist: " << data_file << endl;
+        return false;
+    }
+
+    while(fin >> read_uid >> credits and not found) {  // Loop until correct uid is found
+        //cout << read_uid << " " << credits << endl;
+        if (read_uid == uid) { // found our player's data
+            player.uid = uid;
+            player.credits = credits;
+            fin >> ws; // read and discard trailing whitespaces
+            getline(fin, name);
+            strcpy(player.name, name.c_str());
+            player.current_game = nullptr;
+            found = true;
+        }
+        else {
+            // read and discard player's full name
+            //fin >> credits;
+            getline(fin, name);
+        }
+    }
+    fin.close();
+    return found;
+}
+
 char * mgets(char *dst) {
     char *ptr = dst;
     int ch; 
@@ -134,7 +168,7 @@ void printNumber(int randNumber) {
 }
 
 // win jackpot of 10K if random number 7 is generated
-int lucky7() {
+unsigned int lucky7() {
     cout << "the random number is: " << flush;
     int num = get_random_number(9);
     printNumber(num);
@@ -144,7 +178,7 @@ int lucky7() {
 }
 
 // win jackpot of 100K for 3 777 numbers
-int lucky777() {
+unsigned int lucky777() {
     cout << "3 random numers are: " << flush;
     int num1 = get_random_number(9);
     printNumber(num1);
@@ -162,7 +196,7 @@ int lucky777() {
 }
 
 // win Jackpot of 1M if all 5 random numbers are 77777
-int lucky77777() {
+unsigned int lucky77777() {
     cout << "5 random numers are: " << flush;
     int num1 = get_random_number(9);
     printNumber(num1);

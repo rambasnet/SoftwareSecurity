@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     strcpy(secret_file, "/var/secret");
 
-    if (argc <2)
+    if (argc < 2)
         usage(argv[0], secret_file);
     
     strcpy(secret, argv[1]);

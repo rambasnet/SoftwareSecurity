@@ -20,9 +20,11 @@ CPP_FILES = lucky7.cpp main.cpp # FIXME
 # first compile each file to object file
 # then make a single binary program
 build:
+	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES) -o $(PROGRAM_NAME)
 	# must run make with sudo to disable randomaize_va_space
 	echo 0 | tee /proc/sys/kernel/randomize_va_space
-	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES) -o $(PROGRAM_NAME)
+	sudo chown root:root $(PROGRAM_NAME)
+	sudo chmod +s $(PROGRAM_NAME) 
 
 # make clean rule
 # delete object and binary files
