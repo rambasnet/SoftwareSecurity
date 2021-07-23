@@ -81,7 +81,7 @@ void jackpot10K() {
 
 // This function simply awards the jackpot for the lucky 777 game
 void jackpot100K() {
-   printf("*+*+*+*+*+* JACKPOT 100 THOSAND *+*+*+*+*+*\n");
+   printf("*+*+*+*+*+* JACKPOT 100 THOUSAND *+*+*+*+*+*\n");
    printf("Congratulations!!!!\n You have won the jackpot of 100000 (100K) credits!\n");
    player.credits += 100000;
 }

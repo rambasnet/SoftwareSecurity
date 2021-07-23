@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 
 int get_choice(User &player) {
    int choice = 0;
-   do{
+   //do{
       //system("clear");
       cout << "-=[ Lucky 7 Game Menu ]=-\n";
       cout << "1 - Play Lucky 7 game\n";
@@ -33,12 +33,15 @@ int get_choice(User &player) {
       cout << "Enter your choice [1-7]: ";
       cin >> choice;
     
-      if ((choice < 1) || (choice > 7))
+      if ((choice < 1) || (choice > 7)) {
          cerr << "The number " << choice << " is an invalid selection.\n\n";
+         return 1;
+      }
+
       else 
          return choice;
 
-   } while(true);
+   //} while(true);
    
 }
 
