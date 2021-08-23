@@ -50,7 +50,9 @@ pip install ptpyton # better python REPL for terminal
 - using a terminal `cd` into the repository folder and run `jupyter notebook`
 
 ```bash
+cd <EthicalHacking_Repo>
 jupyter notebook
 ```
+
 - open the link shown in a browser if it's not opened on its own
-- open 00-Introduction.ipynb chapter that provides table of contents with link to all the notebooks
+- open 00-TableOfContents.ipynb chapter that provides table of contents with link to all the notebooks
