@@ -26,21 +26,21 @@
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install build-essential
+sudo apt install build-essential # C/C++ compiler, make, etc.
 sudo apt install ccache
 sudo apt install libboost-all-dev
-sudo apt install gcc-multilib g++-multilib
+sudo apt install gcc-multilib g++-multilib # library for compiling 32-bit
 sudo apt install gdb
 sudo apt install gdbserver
 sudo apt install git
-sudo apt install libsqlite3-dev
-sudo apt install sqlitebrowswer
+sudo apt install libsqlite3-dev # C++ library for Sqlite
+sudo apt install sqlitebrowser
 curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda.sh # pick defaults; python 3 is installed!
 conda update conda
 conda install notebook # jupyter notebook
-conda install -c conda-forge xeus-cling #c++ kernel
-pip install ptpyton # better python REPL for terminal
+conda install -c conda-forge xeus-cling # C++ kernel
+pip install ptpython # better python REPL for terminal
 ```
 
 # Play with Notebooks
@@ -55,4 +55,4 @@ jupyter notebook
 ```
 
 - open the link shown in a browser if it's not opened on its own
-- open 00-TableOfContents.ipynb chapter that provides table of contents with link to all the notebooks
+- open 00-TableOfContents.ipynb notebook that provides table of contents with link to all the notebooks
