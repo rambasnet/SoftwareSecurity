@@ -30,24 +30,24 @@ int main(int argc, char* argv[]) {
             switch(choice) {
                case 1:
                   cout << "\n~*~*~ Lucky 7 ~*~*~\nCosts 10 credits to play this game.\n"
-                  << "Machine will generate 1 random numbers each between 1 and 9.\n"
-                  << "If the number is 7, you win a jackpot of 10 THOUSAND\n"
+                  << "Machine will generate 1 random number between 1 and 9.\n"
+                  << "If the number is 7, you win a jackpot of 10 THOUSAND.\n"
                   << "Otherwise, you lose.\n" << flush << endl;
                   player.current_game = lucky7;
                   break;
                case 2:
                   cout << "\n~*~*~ Lucky 777 ~*~*~\nCosts 50 credits to play this game.\n"
                   << "Machine will generate 3 random numbers each between 1 and 9.\n"
-                  << "If all 3 numbers are 7, you win a jackpot of 100 THOUSAND\n"
-                  << "If all 3 numbers match, you win 10 THOUSAND\n"
+                  << "If all 3 numbers are 7, you win a jackpot of 100 THOUSAND.\n"
+                  << "If all 3 numbers match, you win 10 THOUSAND.\n"
                   << "Otherwise, you lose.\n Enter to continue..." << flush << endl;               
                   player.current_game = lucky777;
                   break;
                case 3:
                   cout << "\n~*~*~ Lucky 77777 ~*~*~\nCosts 100 credits to play this game.\n"
                   << "Machine will generate 5 random numbers each between 1 and 9.\n"
-                  << "If all 5 numbers are 7, you win a jackpot of 1 MILLION\n"
-                  << "If all 5 numbers match, you win 100 THOUSAND\n"
+                  << "If all 5 numbers are 7, you win a jackpot of 1 MILLION.\n"
+                  << "If all 5 numbers match, you win 100 THOUSAND.\n"
                   << "Otherwise, you lose.\n Enter to continue..." << flush << endl;
                   player.current_game = lucky77777;
                   break;
