@@ -18,6 +18,9 @@ User player;      // Player struct
 
 int main(int argc, char* argv[]) {
    int choice, last_game;
+   // gives same addresses as in GDB
+   //printf("player.name @ %p\n", &player.name); 
+   //printf("player.current_game @ %p\n", &player.current_game);
 
    if(not read_player_data(DATAFILE,  player)) // Try to read player data from file.
       register_new_player(DATAFILE, player);    // If there is no data, register a new player.
