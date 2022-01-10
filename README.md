@@ -1,4 +1,4 @@
-# Ethical Hacking
+# System Security
 
 - fundamentals of System & Network Exploitation
 - collection of hacking tricks, techniques & tools
