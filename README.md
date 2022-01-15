@@ -55,5 +55,5 @@ cd <EthicalHacking_Repo>
 jupyter notebook
 ```
 
-- open the link shown in a browser if it's not opened on its own
+- copy and paste the link shown on a browser if it doesn't open on its own
 - open 00-TableOfContents.ipynb notebook that provides table of contents with link to all the notebooks
