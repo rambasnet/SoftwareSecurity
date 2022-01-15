@@ -1,8 +1,9 @@
-# System Security
+# System and Software Security and Exploitation
 
-- fundamentals of System & Network Exploitation
-- collection of hacking tricks, techniques & tools
-- primary tools: C++, g++, Bash, Python3
+- Fundamentals of System and C++ Software Security and Exploitation
+- Hacking Tricks, Techniques & Tools
+- Primary Tools: C++, Bash, Python3
+- CTF
 
 # Requirements
 
