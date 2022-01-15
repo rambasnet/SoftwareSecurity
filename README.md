@@ -1,6 +1,6 @@
 # System and Software Security and Exploitation
 
-- Fundamentals of System and C++ Software Security and Exploitation
+- Fundamentals of System and C/C++ Software Security and Exploitation
 - Hacking Tricks, Techniques & Tools
 - Primary Tools: C++, Bash, Python3
 - CTF
@@ -19,7 +19,8 @@
 - pwntools
 - boost C++ libraries
 
-# Install Required Tools
+# Install Required Tools and Packages
+
 - update Linux and install tools
 - install Python 3.x Miniconda for Linux: https://conda.io/en/latest/miniconda.html
 - run the following commands on a Terminal
@@ -52,8 +53,9 @@ pip install ptpython # better python REPL for terminal
 - using a terminal `cd` into the repository folder and run `jupyter notebook`
 
 ```bash
-cd <EthicalHacking_Repo>
-jupyter notebook
+git clone https://github.com/rambasnet/SystemSecurity.git
+cd SystemSecurity
+jupyter retro
 ```
 
 - copy and paste the link shown on a browser if it doesn't open on its own
