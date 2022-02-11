@@ -1,6 +1,6 @@
 # Makefile Template
 # variable for compiler name
-COMPILER = g++
+COMPILER=g++
 
 # c++ compiler flags
 # -c : just do preprocess; compile and assemble into object files
@@ -8,13 +8,13 @@ COMPILER = g++
 # -Wall : turns on most, but not  all, compiler warnings
 # -std=c++17 : uses c++17 standard
 # put all the required flags separated by space
-COMPILER_FLAGS = -g -Wall -m32 -fno-stack-protector -z execstack -no-pie
+COMPILER_FLAGS=-g -Wall -m32 -Wall -Wpedantic -Wextra -Wconversion -fno-stack-protector -z execstack -no-pie
 
 # the build target executable program name of your choice
-PROGRAM_NAME = vuln.exe # FIXME
+PROGRAM_NAME=vuln.exe # FIXME
 
 # list all .cpp files separated by space; files must exist!
-CPP_FILES = vuln.cpp # FIXME
+CPP_FILES=vuln.cpp # FIXME
 
 # make build rule/default rule that'll be run when we run "make" or make build
 # first compile each file to object file
