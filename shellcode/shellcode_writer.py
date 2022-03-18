@@ -32,7 +32,7 @@ fileName = "../port_bind_shellcode.bin"
 # open and write binary to the file
 
 with open(fileName, 'wb') as fout:
-	fout.write(shellcode)
+    fout.write(shellcode)
 
 print(f'All done! Binary file created: {fileName}') 
 
