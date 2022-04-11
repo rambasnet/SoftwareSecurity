@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-#define BUFSIZE 128
+#define BUFSIZE 200
 
 using namespace std;
 
@@ -44,7 +44,7 @@ char * mgets(char *dst) {
 
 void bad() {
     char buffer[BUFSIZE];
-    printf("buffer is at %p\n", buffer);
+    //printf("buffer is at %p\n", buffer);
     cout << "Give me some text: ";
     fflush(stdout);
     mgets(buffer); // similar to C's gets;
