@@ -7,15 +7,15 @@
 //https://tldp.org/HOWTO/Program-Library-HOWTO/dl-libraries.html
 
 void start(char *data) {
-  printf("IOLI Crackme Level 0x00\n");
-  printf("Password:");
-
-  char buf[32];
-  //memset(buf, 0, sizeof(buf));
-  //read(0, buf, 256);
-  strcpy(buf, data);
-  printf("Entered: %s\n", buf);
-  if (!strcmp(buf, "250382"))
+  printf("Password: ");
+  fflush(stdout);
+  char buf[16];
+  memset(buf, 0, sizeof(buf));
+  size_t s = read(0, buf, 256);
+  //strcpy(buf, data);
+  printf("Acknowledged: %s with %d bytes\n", buf, s);
+  
+  if (!strcmp(buf, "haxor\n"))
     printf("Password OK :)\n");
   else
     printf("Invalid Password!\n");
