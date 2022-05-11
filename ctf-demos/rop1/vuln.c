@@ -7,13 +7,12 @@
 //https://tldp.org/HOWTO/Program-Library-HOWTO/dl-libraries.html
 
 void start(char *data) {
-  printf("Password: ");
   fflush(stdout);
   char buf[16];
   memset(buf, 0, sizeof(buf));
-  size_t s = read(0, buf, 256);
+  //size_t s = read(0, buf, 256);
   //strcpy(buf, data);
-  printf("Acknowledged: %s with %d bytes\n", buf, s);
+  printf("Acknowledged: %s with %d bytes\n", buf, strlen(data));
   
   if (!strcmp(buf, "haxor\n"))
     printf("Password OK :)\n");
