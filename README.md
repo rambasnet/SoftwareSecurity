@@ -54,8 +54,8 @@ pip install ptpython # better python REPL for terminal
 - using a terminal `cd` into the repository folder and run `jupyter notebook`
 
 ```bash
-git clone https://github.com/rambasnet/SystemSecurity.git
-cd SystemSecurity
+git clone https://github.com/rambasnet/SoftwareSecurity.git
+cd SoftwareSecurity
 jupyter retro
 ```
 
