@@ -1,0 +1,22 @@
+Registers info:
+===============
+$esp = 0xffffbdb0
+$ebp = 0xffffbdc8
+
+Data and BSS segement
+======================
+global_var is at: 0x56559018
+global_name is at: 0x56559020
+
+Stack variable:
+===============
+buffer is at: 0xffffbdb3
+
+Code segment:
+=============
+main is at 0x565561ad
+
+Shared library code
+=====================
+printf is at 0xf7853df0
+cout is at 0xf7e23c40
