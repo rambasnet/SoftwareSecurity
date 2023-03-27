@@ -11,10 +11,6 @@ using namespace std;
 using namespace std;
 
 void give_shell(){
-    // Set the gid to the effective gid
-    // this prevents /bin/sh from dropping the privileges
-    gid_t gid = getegid();
-    setresgid(gid, gid, gid);
     system("/bin/sh");
 }
 
@@ -53,8 +49,6 @@ void bad() {
 }
 
 int main(int argc, char *argv[]) {
-    gid_t gid = getegid();
-    setresgid(gid, gid, gid);
     bad();
     cout << "Good bye!\n";
     return 0;
