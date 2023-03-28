@@ -1,9 +1,9 @@
-#include <cstdlib>
+#include <unistd.h>
 
-using namespace std;
-
-int main(int argc, char* argv[]) {
-    // simply call the system command
-    system("/bin/sh");
+int main() {
+    char * name[2];
+    name[0] = "/bin/sh";
+    name[1] = NULL;
+    execve(name[0], name, NULL);
     return 0;
 }
