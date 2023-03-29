@@ -1,0 +1,6 @@
+break main
+pattern arg 200
+run
+continue
+patts
+quit
