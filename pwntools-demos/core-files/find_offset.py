@@ -2,7 +2,7 @@
 
 from pwn import *
 
-target_program = "./vuln_cpp.exe"
+target_program = "io_demo.exe"
 
 elf = ELF(target_program)
 
