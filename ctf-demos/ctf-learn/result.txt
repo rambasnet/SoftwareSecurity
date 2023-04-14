@@ -1,0 +1,70 @@
+[*] '/home/kali/Sp23/SoftwareSecurity/ctf-demos/ctf-learn/bof.exe'
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+[x] Opening connection to thekidofarcrania.com on port 35235
+[x] Opening connection to thekidofarcrania.com on port 35235: Trying 104.131.79.111
+[+] Opening connection to thekidofarcrania.com on port 35235: Done
+line =   
+
+line =  Legend: [32mbuff [32;1mMODIFIED [m[33mpadding [33;1mMODIFIED
+
+line =    [m[34mnotsecret [34;1mMODIFIED [m[31msecret [31;1mMODIFIED [101;1;37mCORRECT secret[m
+
+line =  0xffaf15c8 [37;1m| [0;32;1m41[m [0;32;1m41[m [0;32;1m41[m [0;32;1m41[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xffaf15d0 [37;1m| [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xffaf15d8 [37;1m| [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xffaf15e0 [37;1m| [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xffaf15e8 [37;1m| [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [37;1m|[m
+
+line =  0xffaf15f0 [37;1m| [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [37;1m|[m
+
+line =  0xffaf15f8 [37;1m| [0;31mef[m [0;31mbe[m [0;31mad[m [0;31mde[m [0;34m00[m [0;34mff[m [0;34mff[m [0;34mff[m [37;1m|[m
+
+line =  0xffaf1600 [37;1m| [0;37mc0[m [0;37m55[m [0;37mf7[m [0;37mf7[m [0;37m84[m [0;37mef[m [0;37m60[m [0;37m56[m [37;1m|[m
+
+line =  0xffaf1608 [37;1m| [0;37m18[m [0;37m16[m [0;37maf[m [0;37mff[m [0;37m11[m [0;37mcb[m [0;37m60[m [0;37m56[m [37;1m|[m
+
+line =  0xffaf1610 [37;1m| [0;37m30[m [0;37m16[m [0;37maf[m [0;37mff[m [0;37m00[m [0;37m00[m [0;37m00[m [0;37m00[m [37;1m|[m
+
+line =  
+
+line =  Maybe you haven't overflowed enough characters? Try again?
+
+[*] Closed connection to thekidofarcrania.com port 35235
+[*] '/home/kali/Sp23/SoftwareSecurity/ctf-demos/ctf-learn/bof.exe'
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+[x] Opening connection to thekidofarcrania.com on port 35235
+[x] Opening connection to thekidofarcrania.com on port 35235: Trying 104.131.79.111
+[+] Opening connection to thekidofarcrania.com on port 35235: Done
+line =   
+
+line =  Legend: [32mbuff [32;1mMODIFIED [m[33mpadding [33;1mMODIFIED
+
+line =    [m[34mnotsecret [34;1mMODIFIED [m[31msecret [31;1mMODIFIED [101;1;37mCORRECT secret[m
+
+line =  0xff809ec8 [37;1m| [0;32;1m41[m [0;32;1m41[m [0;32;1m41[m [0;32;1m41[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+Found... begin=b'0xff809ec8 \x1b[37;1m'
+line =  0xff809ed0 [37;1m| [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xff809ed8 [37;1m| [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xff809ee0 [37;1m| [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [0;32m00[m [37;1m|[m
+
+line =  0xff809ee8 [37;1m| [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [37;1m|[m
+
+line =  0xff809ef0 [37;1m| [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [0;33mff[m [37;1m|[m
+
+begin=b'0xff809ec8 \x1b[37;1m', end=b'0xff809ef0 \x1b[37;1m'
+[*] Closed connection to thekidofarcrania.com port 35235
