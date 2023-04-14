@@ -1,1 +1,1 @@
-CTF{YayBabbyGet}v
+CTF{YayBabbyThisIsTheFlag}v
