@@ -17,11 +17,11 @@ using namespace std;
 User player;      // Player struct
 
 int main(int argc, char* argv[]) {
-   int choice, last_game;
+   int choice, last_game = 0;
    // gives same addresses as in GDB
    //printf("player.name @ %p\n", &player.name); 
    //printf("player.current_game @ %p\n", &player.current_game);
-
+   //last_game = 0;
    if(not read_player_data(DATAFILE,  player)) // Try to read player data from file.
       register_new_player(DATAFILE, player);    // If there is no data, register a new player.
 
@@ -78,21 +78,21 @@ int main(int argc, char* argv[]) {
 // This function simply awards the jackpot for the Pick a Number game
 void jackpot10K() {
    printf("*+*+*+*+*+* JACKPOT 10 THOUSAND *+*+*+*+*+*\n");
-   printf("Congratulations!\n You have won the jackpot of 10000 (10K) credits!\n");
+   printf("Congratulations!\n You have won the jackpot of 10,000 (10K) credits!\n");
    player.credits += 10000;
 }
 
 // This function simply awards the jackpot for the lucky 777 game
 void jackpot100K() {
    printf("*+*+*+*+*+* JACKPOT 100 THOUSAND *+*+*+*+*+*\n");
-   printf("Congratulations!!!!\n You have won the jackpot of 100000 (100K) credits!\n");
+   printf("Congratulations!!!!\n You have won the jackpot of 100,000 (100K) credits!\n");
    player.credits += 100000;
 }
 
 // This function simply awards the jackpot for the lucky 77777 game
 void jackpot1M() {
    printf("*+*+*+*+*+* JACKPOT 1 MILLION *+*+*+*+*+*\n");
-   printf("!!!!Congratulations!!!!You have won the jackpot of 100000 (1M) credits!\n");
+   printf("!!!!Congratulations!!!!You have won the jackpot of 1,000,000 (1M) credits!\n");
    player.credits += 1000000;
 }
 
@@ -118,7 +118,6 @@ void play_the_game() {
    char again;
    int result;
    do {
-
       if (player.credits < 10) {
          cout << "Sorry, you're out of credit.\nReset your credit to 500 to play again\n";
          break;
