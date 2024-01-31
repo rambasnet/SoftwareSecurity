@@ -19,16 +19,19 @@ CPP_FILES =  assertdebug.cpp # FIXME
 # make build rule/default rule that'll be run when we run "make" or make build
 # first compile each file to object file
 # then make a single binary program
+.PHONY: build
 build:
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
 	$(COMPILER) -o $(PROGRAM_NAME) *.o
 
 # rule to run the program
 # make run to execute this rule
+.PHONY: run
 run:
 	./$(PROGRAM_NAME)
 
 # make clean rule
 # delete object and binary files
+.PHONY: clean
 clean:
 	rm -f $(PROGRAM_NAME) *.o

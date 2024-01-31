@@ -18,11 +18,12 @@ CPPFILES = unittesting.cpp
 # make all rule/default rule that'll be run when we run "make"
 # first compile each file to object file
 # then make a single binary program
+.PHONY: all
 all:
 	$(CXX) $(CXXFLAGS) $(CPPFILES)
 	$(CXX) -o $(PROGRAM) *.o
 
-# make clean rule
 # delete object and binary files
+.PHONY: clean
 clean:
 	rm -f $(PROGRAM) *.o

@@ -7,15 +7,17 @@ PROGRAM_NAME = capleak
 
 CPP_FILES = capleak.cpp
 
+.PHONY: all
 all: build
 	sudo chown root $(PROGRAM_NAME)
 	sudo chmod +s $(PROGRAM_NAME)
 
-
+.PHONY: build
 build:
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES) -o $(PROGRAM_NAME)
 
-# make clean rule
+
 # delete object and binary files
+.PHONY: clean
 clean:
 	rm -f $(PROGRAM_NAME) *.o
