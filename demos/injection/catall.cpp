@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
     command = (char *)malloc(strlen(v[0]) + strlen(v[1]) + 2);
     sprintf(command, "%s %s", v[0], v[1]);
     //printf("argv[1] = %s\n", argv[1]);
-    // Use only one of the followings.
     system(command);
 
     return 0;
