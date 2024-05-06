@@ -40,10 +40,9 @@ sudo apt install sqlitebrowser
 curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda.sh # pick defaults; python 3 is installed!
 conda update conda
-conda install -c conda-forge mamba # install mamba
-mamba install jupyter notebook # jupyter notebook
-mamba install -c conda-forge xeus-cling # C++ kernel
-mamba install -c conda-forge retrolab # replate classic notebook with retro style
+conda install jupyter notebook # jupyter notebook
+conda install -c conda-forge xeus-cling # C++ kernel
+conda install -c conda-forge retrolab # replate classic notebook with retro style
 pip install ptpython # better python REPL for terminal
 ```
 
