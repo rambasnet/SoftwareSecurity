@@ -1,0 +1,4 @@
+jupyter
+flake8
+autopep8
+requests
