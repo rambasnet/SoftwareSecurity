@@ -19,28 +19,6 @@
 - pwntools
 - boost C++ libraries
 
-### On a local VM system
-
-- must use Linux x86-64-bit system
-To run these notebooks interactively and save your work locally, you need [Python 3](https://www.python.org/) and [Jupyter Notebook](http://jupyter.org/) -- an interactive web-based editor that allows you to create and share documents that contain live code and data. [Anaconda or Miniconda](https://www.anaconda.com/products/distribution) is the recommended way to install Python and other packages on all modern platforms.
-
-#### Using Docker
-
-- Install Docker on your system: [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
-
-- Dockerfile is provided to build a container image with all the necessary packages and dependencies to run the notebooks. You can build the image and run the container using the provided bash scripts.
-
-- Clone this repo and run the following command from the root of the repo
-- Use git-bash Terminal on Windows to run bash scripts
-
-```bash
-    git clone https://github.com/rambasnet/Python-Object-Oriented-Programming.git
-    bash run-jupyter.sh # run jupyter notebook server in the container
-```
-
-- Jupiter Notebooks are inside the `notebooks` folder
-- start from the `notebbooks/OO-Table-of-Contents.ipynb`
-
 
 # Install Required Tools and Packages
 
