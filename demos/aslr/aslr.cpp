@@ -2,14 +2,15 @@
 // compile and run the program multiple times
 // if you see same value for $esp, ASLR is disabled
 // $ g++ -g -m 32 -o aslr.exe aslr.cpp
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 using namespace std;
 
 int global_var = 100; // data segment
 char global_name[20]; // bss segment
 
-int main(void) {
+int main(void)
+{
     char buffer[] = "Hello World!";
     register int esp asm("esp");
     register int ebp asm("ebp");
