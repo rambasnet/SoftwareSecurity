@@ -3,7 +3,7 @@ COMPILER = g++
 COMPILER_FLAGS = -g -Wall -std=c++17
 
 # the build target executable program name of your choice
-PROGRAM_NAME = capleak
+PROGRAM_NAME = capleak.exe
 
 CPP_FILES = capleak.cpp
 
