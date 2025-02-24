@@ -44,3 +44,4 @@ core.*
 .DS_Store
 nessus_plugins
 nessus-fetch.db
+nessusd.db
