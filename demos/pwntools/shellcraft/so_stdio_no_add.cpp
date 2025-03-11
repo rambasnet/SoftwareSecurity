@@ -10,10 +10,6 @@ using namespace std;
 
 using namespace std;
 
-void give_shell(){
-    system("/bin/sh");
-}
-
 char * mgets(char *dst) {
     char *ptr = dst;
     int ch; 
