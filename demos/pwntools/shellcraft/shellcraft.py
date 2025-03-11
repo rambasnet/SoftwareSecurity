@@ -13,4 +13,4 @@ with open("shellcode_exec.exe", "wb") as f:
     f.write(shellcode_exec)
 
 os.system("chmod +x shellcode_exec.exe && ./shellcode_exec.exe")
-#asm(shellcraft.cat('/etc/passwd')))
+
