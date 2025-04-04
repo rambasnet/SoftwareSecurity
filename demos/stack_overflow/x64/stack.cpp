@@ -10,6 +10,7 @@ const int MAX_DATA = 200;
 
 void vulnerable(char *str) {
 	char buffer[100];
+	// printf("Buffer is at %p\n", &buffer);
 	strcpy(buffer, str);
 	cout << buffer << endl;
 }
