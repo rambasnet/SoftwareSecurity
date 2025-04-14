@@ -12,24 +12,25 @@ PROGRAM_NAME = tinyweb.exe
 
 # rule for compiling and building program
 # make or make all triggers the following rule
+.PHONY: build
 build:
-	# disable ASLR
-	echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 	# compiles .cpp to object file .o
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
 	# builds executable from object files
 	$(COMPILER) $(BUILD_FLAGS) -o $(PROGRAM_NAME) *.o
-	sudo chown root:root $(PROGRAM_NAME)
-	sudo chmod u+s $(PROGRAM_NAME)
+	chown root:root $(PROGRAM_NAME)
+	chmod u+s $(PROGRAM_NAME)
 
 
 # rule for running programming
 # make run triggers the following rule
+.PHONY: run
 run:
 	./$(PROGRAM_NAME)
 
 # rule for clean up
 # make clean triggers the following rule
+.PHONY: clean
 clean:
 	rm -f $(PROGRAM_NAME) *.o
 	

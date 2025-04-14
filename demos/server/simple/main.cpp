@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#include "../util/utility.h"
+#include "./util/utility.h"
 
 
 #define PORT 7890	// the port users will be connecting to
@@ -28,8 +28,8 @@ int main(void) {
 	
 	host_addr.sin_family = AF_INET;		 // host byte order
 	host_addr.sin_port = htons(PORT);	 // short, network byte order
-	host_addr.sin_addr.s_addr = INADDR_ANY; // automatically fill with my IP
-	memset(&(host_addr.sin_zero), '\0', 8); // zero the rest of the struct
+	host_addr.sin_addr.s_addr = INADDR_ANY;  // automatically fill with my IP
+	memset(&(host_addr.sin_zero), '\0', 8);  // zero the rest of the struct
 
 	if (bind(sockfd, (struct sockaddr *)&host_addr, sizeof(struct sockaddr)) == -1)
 		fatal("binding to socket");
@@ -38,22 +38,30 @@ int main(void) {
 		fatal("listening on socket");
 
 	while(1) {    // Accept loop
-        printf("Server running on: %s:%d\n", inet_ntoa(host_addr.sin_addr), ntohs(host_addr.sin_port));
+        	printf("Server running on: %s:%d\n", inet_ntoa(host_addr.sin_addr), ntohs(host_addr.sin_port));
 		sin_size = sizeof(struct sockaddr_in);
 		new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
 		if(new_sockfd == -1)
 			fatal("accepting connection");
 		printf("server: got connection from %s port %d\n",inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 		
-        // send Hello there... to client
-        send(new_sockfd, "Hello there!\n", 13, 0);
+		char address[100];
+		sprintf(address, "Buffer @ %p\n", buffer);
+		printf("%s", address);
 		
-        // receive upto 1024 bytes and store into buffer
-        recv_length = recv(new_sockfd, &buffer, 1024, 0);
-		while(recv_length > 0) {
+		// send Hello there... to client
+		send(new_sockfd, "Hello there!\n", 13, 0);
+		
+		// receive upto 1024 bytes and store into buffer
+		recv_length = recv(new_sockfd, buffer, 1024, 0);
+		while(recv_length > 0 and strncmp(buffer, "bye", 3) != 0) {
 			printf("RECV: %d bytes\n", recv_length);
 			dump(buffer, recv_length);
-            // receive 1024 bytes
+			if (strncmp(buffer, "buffer ?", 8) == 0)
+				send(new_sockfd, address, strlen(address), 0);
+			else
+				send(new_sockfd, buffer, recv_length, 0);
+	    		// receive upto 1024 bytes
 			recv_length = recv(new_sockfd, &buffer, 1024, 0);
 		}
 		close(new_sockfd);

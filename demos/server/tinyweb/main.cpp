@@ -7,8 +7,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "../util/utility.h"
-#include "../util/net_utility.h"
+#include "./util/utility.h"
+#include "./util/net_utility.h"
 
 enum REQUEST_TYPE {GET, POST, HEAD, UNKNOWN};
 
@@ -21,6 +21,7 @@ void handle_connection(int, struct sockaddr_in *); // handle web requests
 int get_file_size(int); // returns the filesize of open file descriptor
 void send_file_not_found(const int); // send file not found error
 void send_file(const int, char *); // send file/resource requested
+void send_buffer_address(const int, char *); // send buffer address
 
 int main(void) {
    int sockfd, new_sockfd, yes=1; 
@@ -66,7 +67,10 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr) {
 	char *ptr, request[500];
 	int length = 0;
 	REQUEST_TYPE req_type = UNKNOWN;
-
+	
+	char address[100];
+	sprintf(address, "Request buffer @ %p\r\n", request);
+	printf("%s", address);
 	// receive one line from client and store it into request buffer
 	length = recv_line(sockfd, request);
 
@@ -93,7 +97,10 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr) {
 			printf("\tUNKNOWN REQUEST!\n");
 		} 
 		else if (req_type == GET) { // valid request, with ptr pointing to the resource name
-			send_file(sockfd, ptr);
+		    if (strncmp(ptr, "/buffer", 7) == 0)
+		        send_buffer_address(sockfd, address);
+		    else
+			    send_file(sockfd, ptr);
 	    }
    } // end if block for valid HTTP
    shutdown(sockfd, SHUT_RDWR); // close the socket gracefully
@@ -112,7 +119,7 @@ int get_file_size(int fd) {
 
 void send_file_not_found(const int sockfd) {
 	printf(" 404 Not Found\n");
-	send_string(sockfd, "HTTP/1.0 404 NOT FOUND\r\n");
+	send_string(sockfd, "HTTP/1.1 404 NOT FOUND\r\n");
 	send_string(sockfd, "Server: Tiny webserver\r\n\r\n");
 	send_string(sockfd, "<html><head><title>404 Not Found</title></head>");
 	send_string(sockfd, "<body><h1>URL not found</h1></body></html>\r\n");
@@ -136,7 +143,7 @@ void send_file(const int sockfd, char *ptr) {
 	} 
 	else {      // otherwise, serve up the file
 		printf(" 200 OK\n");
-		send_string(sockfd, "HTTP/1.0 200 OK\r\n");
+		send_string(sockfd, "HTTP/1.1 200 OK\r\n");
 		send_string(sockfd, "Server: Tiny webserver\r\n\r\n");
 		
 		if( (length = get_file_size(fd)) == -1)
@@ -151,4 +158,14 @@ void send_file(const int sockfd, char *ptr) {
 		free(ptr); // free file memory
 		close(fd); // close the file
 	} // end if block for file found/not found
+}
+
+void send_buffer_address(const int sockfd, char *ptr) {
+    printf(" 200 OK\n");
+	send_string(sockfd, "HTTP/1.1 200 OK\r\n");
+	send_string(sockfd, "Server: Tiny webserver\r\n\r\n");
+	send_string(sockfd, "<html><head><title>Request Buffer Address</title></head>");
+	char response[200];
+	sprintf(response, "<body><p style=\"color: red;\">%s</p></body></html>\r\n", ptr);
+	send_string(sockfd, response);
 }

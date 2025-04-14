@@ -10,11 +10,16 @@ CPP_FILES = main.cpp
 # executable program name
 PROGRAM_NAME = simple_server.exe
 
+.PHONY: all
+all: build run
+	@echo "Built and running server..."
+
 # rule for compiling and building program
 # make or make all triggers the following rule
+.PHONY: build
 build:
 	# disable ASLR
-	echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+	echo 0 | tee /proc/sys/kernel/randomize_va_space
 	# compiles .cpp to object file .o
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
 	# builds executable from object files
@@ -22,10 +27,12 @@ build:
 
 # rule for running programming
 # make run triggers the following rule
+.PHONY: run
 run:
 	./$(PROGRAM_NAME)
 
 # rule for clean up
 # make clean triggers the following rule
+.PHONY: clean
 clean:
 	rm -f $(PROGRAM_NAME) *.o
