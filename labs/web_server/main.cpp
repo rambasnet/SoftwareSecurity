@@ -64,7 +64,7 @@ int main(void) {
  * passed socket is closed at the end of the function.
  */
 void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr) {
-	char *ptr, request[750];
+	char *ptr, request[500];
 	int length = 0;
 	REQUEST_TYPE req_type = UNKNOWN;
 	

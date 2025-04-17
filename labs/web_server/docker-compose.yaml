@@ -1,0 +1,22 @@
+services:
+   server:
+        build:
+            context: ./ # Use the current directory as the build context
+            dockerfile: Dockerfile
+        container_name: tinyweb
+        hostname: tinyweb
+        volumes:
+            - ./:/var/www
+        cap_add:
+            - ALL
+        privileged: true  # Grant full privileges to the container
+        networks:
+            - server-stack-overflow
+        ports:
+            - 80:80
+        command: sh -c "echo 0 > /proc/sys/kernel/randomize_va_space && tail -f /dev/null"
+        
+
+networks:
+    server-stack-overflow:
+        driver: bridge
