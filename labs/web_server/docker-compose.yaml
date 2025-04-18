@@ -18,7 +18,7 @@ services:
     command: sh -c "echo 0 > /proc/sys/kernel/randomize_va_space && tail -f /dev/null"
 
 networks:
-  server-stack-overflow:
+  server-lab:
     ipam:
       config:
         - subnet: 192.168.200.0/24
