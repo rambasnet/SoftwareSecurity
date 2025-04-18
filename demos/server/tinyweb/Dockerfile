@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Update packages and install gdb, make, and g++ in one step
 RUN apt update && \
     apt install -y net-tools gdb build-essential && \
-    apt install -y libc6-dev gcc-multilib g++-multilib && \
+    apt install -y gcc-multilib g++-multilib && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
