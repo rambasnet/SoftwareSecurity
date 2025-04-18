@@ -1,22 +1,25 @@
 services:
-    server:
-        build:
-          context: ./ # use current folder context
-          dockerfile: Dockerfile
-        privileged: true
-        container_name: server
-        hostname: server
-        cap_add:
-            - ALL
-        volumes:
-            - ./:/app
-        networks:
-            - simple-network
-        ports:
-            - "7890:7890"
-        command: sh -c "echo 0 > /proc/sys/kernel/randomize_va_space && tail -f /dev/null"
+  server:
+    build:
+      context: ./ # use current folder context
+      dockerfile: Dockerfile # dockerfile name
+    privileged: true
+    container_name: server
+    hostname: server
+    cap_add:
+      - ALL
+    volumes:
+      - ./:/app
+    networks:
+      simple-network:
+        ipv4_address: 192.168.10.10
+    ports:
+      - "7890:7890"
+    command: sh -c "tail -f /dev/null"
 
 networks:
-    simple-network:
-        driver: bridge
+  simple-network:
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
 

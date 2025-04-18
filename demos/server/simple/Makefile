@@ -18,8 +18,6 @@ all: build run
 # make or make all triggers the following rule
 .PHONY: build
 build:
-	# disable ASLR
-	#echo 0 | tee /proc/sys/kernel/randomize_va_space
 	# compiles .cpp to object file .o
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
 	# builds executable from object files

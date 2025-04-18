@@ -20,7 +20,7 @@ using namespace std;
 void handle_connection(int, struct sockaddr_in *); // handle web requests
 int get_file_size(int); // returns the filesize of open file descriptor
 void send_file_not_found(const int); // send file not found error
-void send_file(const int, char *); // send file/resource requested
+void send_file(const int, char *, unsigned int); // send file/resource requested
 void send_buffer_address(const int, char *); // send buffer address
 
 int main(void) {
@@ -69,7 +69,7 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr) {
 	REQUEST_TYPE req_type = UNKNOWN;
 	
 	char address[100];
-	sprintf(address, "Request buffer @ %p\r\n", request);
+	snprintf(address, sizeof(address), "Request buffer @ %p\r\n", request);
 	printf("%s", address);
 	// receive one line from client and store it into request buffer
 	length = recv_line(sockfd, request);
@@ -93,14 +93,14 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr) {
 		 	req_type = HEAD;
 		}
 
-		if(req_type == UNKNOWN) { // then this is not a recognized request
+		if(req_type == UNKNOWN) { //this is not a recognized request
 			printf("\tUNKNOWN REQUEST!\n");
 		} 
 		else if (req_type == GET) { // valid request, with ptr pointing to the resource name
 		    if (strncmp(ptr, "/buffer", 7) == 0)
 		        send_buffer_address(sockfd, address);
 		    else
-				send_file(sockfd, ptr);
+				send_file(sockfd, ptr, sizeof(request));
 	    }
    } // end if block for valid HTTP
    shutdown(sockfd, SHUT_RDWR); // close the socket gracefully
@@ -125,15 +125,15 @@ void send_file_not_found(const int sockfd) {
 	send_string(sockfd, "<body><h1>URL not found</h1></body></html>\r\n");
 }
 
-void send_file(const int sockfd, char *ptr) {
+void send_file(const int sockfd, char *ptr, unsigned int ptr_size) {
 	// handle GET request
 	char resource[500];
 	int fd, length;
 
 	if (ptr[strlen(ptr) - 1] == '/')  // for resources ending with '/'
-		strcat(ptr, "index.html");     // add 'index.html' to the end
-	strcpy(resource, WEBROOT);     // begin resource with web root path
-	strcat(resource, ptr);         //  and append resource path
+		strncat(ptr, "index.html", ptr_size);     // add 'index.html' to the end
+	strncpy(resource, WEBROOT, sizeof(resource)-1);     // begin resource with web root path
+	strncat(resource, ptr, sizeof(resource)-1);         //  and append resource path
 
 	fd = open(resource, O_RDONLY, 0); // try to open the file
 	printf("\tOpening \'%s\'\t", resource);
@@ -166,6 +166,6 @@ void send_buffer_address(const int sockfd, char *ptr) {
 	send_string(sockfd, "Server: Tiny webserver\r\n\r\n");
 	send_string(sockfd, "<html><head><title>Request Buffer Address</title></head>");
 	char response[200];
-	sprintf(response, "<body><p style=\"color: red;\">%s</p></body></html>\r\n", ptr);
+	snprintf(response, sizeof(response), "<body><p style=\"color: red;\">%s</p></body></html>\r\n", ptr);
 	send_string(sockfd, response);
 }

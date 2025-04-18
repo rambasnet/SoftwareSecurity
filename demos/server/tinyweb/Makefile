@@ -10,6 +10,9 @@ CPP_FILES = main.cpp
 # executable program name
 PROGRAM_NAME = tinyweb.exe
 
+.PHONY: all
+all: build run
+
 # rule for compiling and building program
 # make or make all triggers the following rule
 .PHONY: build
