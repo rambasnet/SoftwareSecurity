@@ -131,9 +131,9 @@ void send_file(const int sockfd, char *ptr, unsigned int ptr_size) {
 	int fd, length;
 
 	if (ptr[strlen(ptr) - 1] == '/')  // for resources ending with '/'
-		strncat(ptr, "index.html", ptr_size);     // add 'index.html' to the end
-	strncpy(resource, WEBROOT, sizeof(resource)-1);     // begin resource with web root path
-	strncat(resource, ptr, sizeof(resource)-1);         //  and append resource path
+		strncat(ptr, "index.html", ptr_size); // add 'index.html' to the end
+	strncpy(resource, WEBROOT, sizeof(resource)-1); // begin resource with web root path
+	strncat(resource, ptr, sizeof(resource)-1); //  and append resource path
 
 	fd = open(resource, O_RDONLY, 0); // try to open the file
 	printf("\tOpening \'%s\'\t", resource);
@@ -157,7 +157,7 @@ void send_file(const int sockfd, char *ptr, unsigned int ptr_size) {
 		send(sockfd, ptr, length, 0);  // send it to socket
 		free(ptr); // free file memory
 		close(fd); // close the file
-	} // end if block for file found/not found
+	}
 }
 
 void send_buffer_address(const int sockfd, char *ptr) {
