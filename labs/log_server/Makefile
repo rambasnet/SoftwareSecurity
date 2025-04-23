@@ -5,10 +5,10 @@ COMPILER_FLAGS = -c -g -Wall -std=c++17 -m32
 BUILD_FLAGS = -m32 -fno-stack-protector -z execstack -no-pie
 
 # list .cpp files separated by space
-CPP_FILES = logServer.cpp
+CPP_FILES = #FIXME
 
 # executable program name
-PROGRAM_NAME = logServer.exe
+PROGRAM_NAME = #FIXME
 
 # rule for compiling and building program
 # make or make all triggers the following rule
