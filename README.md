@@ -2,14 +2,16 @@
 
 - Fundamentals of System and C/C++ Software Security and Exploitation
 - Hacking Tricks, Techniques & Tools
-- Primary Tools: C++, Bash, Python3
+- System software flaws and exploitations
+- Primary Tools: C/C++, Bash, Python3
 - CTF
 
 # Requirements
 
 - Ubuntu/Debian Linux (Kali Linux 64-bit Preferred)
   - add account kali:kali with sudo access
-- gcc/g++
+- gcc/g++ compilers
+- make
 - Jupyter Notebook
 - Python3
 - gdb
@@ -17,7 +19,7 @@
 - sqlite3 C/C++ library
 - sqlitebrowser
 - pwntools
-- boost C++ libraries
+- Docker and docker-compose
 
 
 # Install Required Tools and Packages
