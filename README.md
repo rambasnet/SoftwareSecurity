@@ -4,11 +4,16 @@
 - Hacking Tricks, Techniques & Tools
 - System software flaws and exploitations
 - Primary Tools: C/C++, Bash, Python3
-- CTF
+- Capture the Flag (CTF) challenges
+- Vulnerability discovery and exploitation
 
-# Requirements
+## Requirements
 
-- Ubuntu/Debian Linux (Kali Linux 64-bit Preferred)
+- Downlaod Kali Linux 64-bit for your system: https://www.kali.org/downloads/
+- Install Kali Linux on a Virtual Machine (VM) or on a physical machine
+- Install VirtualBox or VMware Workstation Player
+- Install VirtualBox Guest Additions or VMware Tools
+- Install the following tools and packages on Kali Linux:
   - add account kali:kali with sudo access
 - gcc/g++ compilers
 - make
@@ -21,11 +26,9 @@
 - pwntools
 - Docker and docker-compose
 
-
-# Install Required Tools and Packages
+## Install Required Tools and Packages
 
 - update Linux and install tools
-- install Python 3.x Miniconda for Linux: https://conda.io/en/latest/miniconda.html
 - run the following commands on a Terminal
 
 ```bash
@@ -34,22 +37,26 @@ sudo apt upgrade
 sudo apt install build-essential # C/C++ compiler, make, etc.
 sudo apt install ccache
 sudo apt install libboost-all-dev
-sudo apt install gcc-multilib g++-multilib # library for compiling 32-bit
+sudo apt install gcc-multilib g++-multilib # library for compiling 32-bit; won't work on Mac M1/M2
 sudo apt install gdb
 sudo apt install gdbserver
 sudo apt install git
 sudo apt install libsqlite3-dev # C++ library for Sqlite
 sudo apt install sqlitebrowser
-curl -o Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda.sh # pick defaults; python 3 is installed!
-conda update conda
-conda install jupyter notebook # jupyter notebook
-conda install -c conda-forge xeus-cling # C++ kernel
-conda install -c conda-forge retrolab # replate classic notebook with retro style
-pip install ptpython # better python REPL for terminal
+sudo apt install python3-pip
+sudo apt install python3-pwntools
+sudo apt install jupyter
 ```
 
-# Play with Notebooks
+## Create Snapshot
+
+- create a snapshot of the VM after installing all the tools and packages
+- this will allow you to revert back to this state if needed
+- this is important for the labs and exercises in this course
+- you can create a snapshot by going to the VirtualBox or VMware Workstation Player menu and selecting "Take Snapshot"
+- name the snapshot something like "Initial Setup" or "Before Labs"
+
+## Play with Notebooks
 
 - clone/download this repository
 - compile and run C++ programs found in `demos` folder
@@ -58,8 +65,8 @@ pip install ptpython # better python REPL for terminal
 ```bash
 git clone https://github.com/rambasnet/SoftwareSecurity.git
 cd SoftwareSecurity
-jupyter retro
+jupyter notebook
 ```
 
 - copy and paste the link shown on a browser if it doesn't open on its own
-- open notebooks/00-TableOfContents.ipynb notebook that provides table of contents with link to all the notebooks
+- open `notebooks/00-TableOfContents.ipynb` notebook that provides table of contents with link to all the notebooks
