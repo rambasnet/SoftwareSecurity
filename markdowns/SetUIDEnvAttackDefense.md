@@ -1,4 +1,9 @@
-# Environment Variables and SetUID Programs: Attacks and Mitigations
+# SetUID Programs & Env Variables: Attacks and Mitigations
+
+## External Resources
+- YouTube Podcast - [https://youtu.be/MwMI1c5yLeo](https://youtu.be/MwMI1c5yLeo)
+- YouTube Video - [https://youtu.be/b0wf_-vNiQQ](https://youtu.be/b0wf_-vNiQQ)
+- NotebookLM learning materials - [https://notebooklm.google.com/notebook/17b87530-c0fc-45e1-8374-01ce6fef
 
 ## Environment Variables Pitfalls
 - there's no known inherent vulnerability on environment variables

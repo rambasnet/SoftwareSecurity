@@ -1,4 +1,10 @@
-# Set-UID Programs and Environment Variables
+# SetUID Programs and Environment Variables
+
+## External Resources
+
+- YouTube Podcast - [https://youtu.be/Ukwd_l8gnfc](https://youtu.be/Ukwd_l8gnfc)
+- YouTube Video - [https://youtu.be/sKjdRDrgkaU](https://youtu.be/sKjdRDrgkaU)
+- NotebookLM learning materials - [https://notebooklm.google.com/notebook/17b87530-c0fc-45e1-8374-01ce6fef4ad0](https://notebooklm.google.com/notebook/17b87530-c0fc-45e1-8374-01ce6fef4ad0)
 
 ## Need for Privileged Programs
 
@@ -73,11 +79,17 @@
 - every process has two User IDs:
 
 #### Real UID (RUID)
+
 - identifies the real owner of the process
+- the user who started the process
+- usually used for accounting purposes
 
 #### Effective UID (EUID)
+
 - identifies privilege of a process
 - access control is based on **EUID**
+- determines what resources the process can access
+- used for permission checks
 
 - when a normal program is executed, **RUID = EUID**
     - both IDs equal to the ID of the user who runs the program
