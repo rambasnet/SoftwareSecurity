@@ -75,5 +75,5 @@ cd SoftwareSecurity
 jupyter notebook
 ```
 
-- copy and paste the link shown on a browser if it doesn't open on its own
+- copy and paste the link shown to a browser if it doesn't open on its own
 - open `notebooks/00-TableOfContents.ipynb` notebook that provides table of contents with link to all the notebooks
