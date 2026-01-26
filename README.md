@@ -45,7 +45,14 @@ sudo apt install libsqlite3-dev # C++ library for Sqlite
 sudo apt install sqlitebrowser
 sudo apt install python3-pip
 sudo apt install python3-pwntools
-sudo apt install jupyter
+```
+
+## Install Jupyter Notebook
+
+- install Jupyter Notebook using pip3
+
+```bash
+python3 -m pip install notebook
 ```
 
 ## Create Snapshot
