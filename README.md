@@ -73,6 +73,7 @@ python3 -m pip install notebook
 git clone https://github.com/rambasnet/SoftwareSecurity.git
 cd SoftwareSecurity
 jupyter notebook --ip 0.0.0.0 --port 8888
+bash run_jupyter.sh
 ```
 
 - copy and paste the link shown to a browser if it doesn't open on its own
