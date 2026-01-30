@@ -76,5 +76,5 @@ jupyter notebook --ip 0.0.0.0 --port 8888
 ```
 
 - copy and paste the link shown to a browser if it doesn't open on its own
-- on Codespace, you've to open the link by clicking on the globe icon on )orts tab (right click to add Ports on the Terminal)
+- on Codespace, you've to open the link by clicking on the globe icon on PORTS tab (right click to add Ports on the Terminal)
 - open `notebooks/00-TableOfContents.ipynb` notebook that provides table of contents with link to all the notebooks
