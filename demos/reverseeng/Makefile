@@ -1,4 +1,4 @@
 
-.PHONY build
+.PHONY: build
 build:
-	gcc -O0 -fno-pie -no-pie hidden_password.c -o backdoor
+	gcc -O0 -fno-pie -no-pie hidden_password.c -o backdoor_x86
