@@ -1,0 +1,1195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Stack Overflow Animation: x86 vs ARM (32/64 toggle)</title>
+    <style>
+      :root {
+        --bg: #0b0f17;
+        --border: #22314f;
+        --text: #e8eefc;
+        --muted: #9fb0d0;
+        --good: #2ee59d;
+        --warn: #ffd166;
+        --bad: #ff5c7a;
+        --cell: #0f172a;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --mono:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        --sans:
+          ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: radial-gradient(
+          1200px 600px at 20% 0%,
+          #142041 0%,
+          var(--bg) 60%
+        );
+        color: var(--text);
+        font-family: var(--sans);
+        padding: 24px;
+      }
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+        letter-spacing: 0.2px;
+      }
+      .sub {
+        margin: 0 0 18px 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .card header {
+        padding: 14px 14px 10px 14px;
+        border-bottom: 1px solid rgba(34, 49, 79, 0.8);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .title .k {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .title .v {
+        font-size: 15px;
+        font-weight: 650;
+        letter-spacing: 0.2px;
+      }
+      .mini {
+        text-align: right;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.35;
+        white-space: nowrap;
+      }
+
+      .content {
+        padding: 14px;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 14px;
+      }
+
+      .stackWrap {
+        position: relative;
+        border: 1px solid rgba(34, 49, 79, 0.8);
+        border-radius: 12px;
+        padding: 10px 10px 10px 34px;
+        background: rgba(16, 24, 39, 0.6);
+        overflow: visible;
+      }
+
+      .memLabel {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        bottom: 8px;
+        width: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        user-select: none;
+        opacity: 0.85;
+      }
+      .memLabel .arrow {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+
+      .stack {
+        position: relative;
+        display: flex;
+        flex-direction: column; /* LOW(top) -> HIGH(bottom) */
+        gap: 8px;
+      }
+
+      .cell {
+        position: relative;
+        background: var(--cell);
+        border: 1px solid rgba(34, 49, 79, 0.9);
+        border-radius: 10px;
+        padding: 8px 10px;
+        min-height: 44px;
+        overflow: hidden;
+      }
+      .cell .row1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .cell .name {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .cell .addr {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(159, 176, 208, 0.85);
+        white-space: nowrap;
+      }
+      .bytes {
+        font-family: var(--mono);
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        color: var(--text);
+        min-height: 16px;
+      }
+
+      .tag {
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.86);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .bufTag {
+        border-color: rgba(46, 229, 157, 0.35);
+        color: rgba(46, 229, 157, 0.9);
+      }
+      .savedTag {
+        border-color: rgba(255, 209, 102, 0.35);
+        color: rgba(255, 209, 102, 0.9);
+      }
+      .retTag {
+        border-color: rgba(255, 92, 122, 0.4);
+        color: rgba(255, 92, 122, 0.92);
+      }
+
+      .pointer {
+        position: absolute;
+        left: -6px;
+        top: 0;
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right: 10px solid rgba(46, 229, 157, 0.95);
+        filter: drop-shadow(0 2px 10px rgba(46, 229, 157, 0.25));
+        opacity: 0;
+        transform: translateY(0);
+        transition:
+          transform 0.18s ease,
+          opacity 0.18s ease;
+        pointer-events: none;
+        z-index: 9;
+      }
+
+      .okGlow {
+        box-shadow:
+          0 0 0 1px rgba(46, 229, 157, 0.3),
+          0 0 22px rgba(46, 229, 157, 0.08);
+      }
+      .warnGlow {
+        box-shadow:
+          0 0 0 1px rgba(255, 209, 102, 0.35),
+          0 0 22px rgba(255, 209, 102, 0.1);
+      }
+      .badGlow {
+        box-shadow:
+          0 0 0 1px rgba(255, 92, 122, 0.35),
+          0 0 22px rgba(255, 92, 122, 0.12);
+      }
+
+      .bufBadge {
+        position: absolute;
+        right: 30px;
+        top: -35px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(232, 238, 252, 0.9);
+        border: 1px solid rgba(46, 229, 157, 0.35);
+        background: rgba(46, 229, 157, 0.08);
+        padding: 6px 8px;
+        border-radius: 12px;
+        white-space: nowrap;
+        z-index: 10;
+      }
+
+      /* Buffer overlay */
+      .bufOverlay {
+        position: absolute;
+        left: -10px;
+        right: -10px;
+        top: 0;
+        height: 0;
+        border: 2px dashed rgba(46, 229, 157, 0.55);
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 4;
+        box-shadow:
+          0 0 0 1px rgba(46, 229, 157, 0.08),
+          0 0 26px rgba(46, 229, 157, 0.06);
+        background: linear-gradient(
+          180deg,
+          rgba(46, 229, 157, 0.08),
+          rgba(46, 229, 157, 0.02)
+        );
+        opacity: 0.95;
+      }
+      .bufOverlay .label {
+        position: absolute;
+        left: 10px;
+        top: -12px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(46, 229, 157, 0.95);
+        border: 1px solid rgba(46, 229, 157, 0.35);
+        background: rgba(11, 15, 23, 0.85);
+        backdrop-filter: blur(6px);
+        white-space: nowrap;
+      }
+      .bufOverlay::before,
+      .bufOverlay::after {
+        content: "";
+        position: absolute;
+        right: 10px;
+        width: 14px;
+        height: 0;
+        border-top: 2px solid rgba(46, 229, 157, 0.65);
+      }
+      .bufOverlay::before {
+        top: 10px;
+      }
+      .bufOverlay::after {
+        bottom: 10px;
+      }
+
+      .side {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .pane {
+        border: 1px solid rgba(34, 49, 79, 0.8);
+        border-radius: 12px;
+        background: rgba(16, 24, 39, 0.6);
+        padding: 12px;
+      }
+      .pane h3 {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        color: rgba(232, 238, 252, 0.92);
+        letter-spacing: 0.2px;
+      }
+      .mono {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+      .status {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 8px;
+      }
+      .pill {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(34, 49, 79, 0.9);
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(232, 238, 252, 0.9);
+      }
+
+      .controls {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(34, 49, 79, 0.9);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-weight: 650;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+        transition:
+          transform 0.05s ease,
+          background 0.15s ease,
+          border-color 0.15s ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.primary {
+        border-color: rgba(46, 229, 157, 0.35);
+        background: rgba(46, 229, 157, 0.1);
+      }
+      button.danger {
+        border-color: rgba(255, 92, 122, 0.35);
+        background: rgba(255, 92, 122, 0.1);
+      }
+      button.toggle {
+        border-color: rgba(255, 209, 102, 0.35);
+        background: rgba(255, 209, 102, 0.1);
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .inputRow {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+      }
+      input[type="text"] {
+        width: min(560px, 100%);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(34, 49, 79, 0.9);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-family: var(--mono);
+        color: var(--text);
+        outline: none;
+      }
+      input[type="range"] {
+        width: 160px;
+      }
+
+      .footerNote {
+        margin-top: 14px;
+        color: rgba(159, 176, 208, 0.95);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .content {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Visual Stack Animation: x86 vs ARM (stack overflow)</h1>
+    <p class="sub">
+      Stack drawn with <b>LOW addresses at the top</b> and
+      <b>HIGH addresses at the bottom</b>. Use the toggle to compare
+      <span style="font-family: var(--mono)">32-bit</span> vs
+      <span style="font-family: var(--mono)">64-bit</span> slot sizes and
+      return-control width.
+    </p>
+
+    <div class="inputRow">
+      <label for="payload">payload</label>
+      <input
+        id="payload"
+        type="text"
+        value="AAAAAAAAAAAAAAAAAAAAAAAABBBBBBBB"
+      />
+      <label for="speed">speed</label>
+      <input id="speed" type="range" min="40" max="350" value="140" />
+      <span class="pill" id="speedLabel">140 ms/byte</span>
+    </div>
+
+    <div class="controls">
+      <button class="toggle" id="modeBtn">Mode: 64-bit</button>
+      <span class="pill" id="modeHint">slot = 8 bytes</span>
+
+      <button class="primary" id="runBtn">Run</button>
+      <button id="stepBtn">Step</button>
+      <button class="danger" id="resetBtn">Reset</button>
+
+      <span class="pill" id="globalStatus">Ready</span>
+    </div>
+
+    <div class="grid" style="margin-top: 16px">
+      <!-- x86 -->
+      <section class="card" id="cardX86">
+        <header>
+          <div class="title">
+            <div class="k">Architecture</div>
+            <div class="v" id="x86Title">x86-64 (System V ABI)</div>
+          </div>
+          <div class="mini" id="x86Mini">
+            <div><span class="tag retTag">RET on stack</span></div>
+            <div>
+              return =
+              <span
+                style="
+                  color: rgba(232, 238, 252, 0.95);
+                  font-family: var(--mono);
+                "
+                >ret</span
+              >
+            </div>
+            <div>
+              control =
+              <span
+                style="
+                  color: rgba(232, 238, 252, 0.95);
+                  font-family: var(--mono);
+                "
+                >RIP</span
+              >
+            </div>
+          </div>
+        </header>
+        <div class="content">
+          <div class="stackWrap">
+            <div class="bufBadge" id="x86BufBadge"></div>
+            <div class="memLabel">
+              <div>LOW</div>
+              <div class="arrow">↓</div>
+              <div>HIGH</div>
+            </div>
+            <div class="stack" id="stackX86"></div>
+            <div class="pointer" id="ptrX86"></div>
+          </div>
+
+          <div class="side">
+            <div class="pane">
+              <h3>Call/Return model</h3>
+              <div class="mono" id="x86Model"></div>
+              <div class="status">
+                <span class="pill" id="x86Byte">byte: 0</span>
+                <span class="pill" id="x86Where">writing: —</span>
+                <span class="pill" id="x86RIP">after ret: —</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ARM -->
+      <section class="card" id="cardARM">
+        <header>
+          <div class="title">
+            <div class="k">Architecture</div>
+            <div class="v" id="armTitle">ARM (AAPCS)</div>
+          </div>
+          <div class="mini" id="armMini"></div>
+        </header>
+        <div class="content">
+          <div class="stackWrap">
+            <div class="bufBadge" id="armBufBadge"></div>
+            <div class="memLabel">
+              <div>LOW</div>
+              <div class="arrow">↓</div>
+              <div>HIGH</div>
+            </div>
+            <div class="stack" id="stackARM"></div>
+            <div class="pointer" id="ptrARM"></div>
+          </div>
+
+          <div class="side">
+            <div class="pane">
+              <h3>LR + prologue (typical)</h3>
+              <div class="mono" id="armModel"></div>
+              <div class="status">
+                <span class="pill" id="armByte">byte: 0</span>
+                <span class="pill" id="armWhere">writing: —</span>
+                <span class="pill" id="armPC">after return: —</span>
+              </div>
+            </div>
+
+            <div class="pane">
+              <h3>Registers (illustrative)</h3>
+              <div class="mono" id="armRegs"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="footerNote">
+      The green overlay box marks
+      <span style="font-family: var(--mono)">char buffer[16]</span>. In 32-bit
+      mode, each slot is 4 bytes; in 64-bit mode, each slot is 8 bytes.
+    </div>
+
+    <script>
+      (function () {
+        const BUFFER_BYTES = 16;
+
+        // ===== Mode-dependent config =====
+        let modeBits = 64; // 32 or 64
+        let SLOT_BYTES = 8; // 4 for 32-bit, 8 for 64-bit
+        let BUFFER_SLOTS = BUFFER_BYTES / SLOT_BYTES;
+
+        // animation state
+        let timer = null;
+        let running = false;
+        let byteIndex = 0;
+        let payload = "";
+        let speedMs = 140;
+
+        // current frames + state maps
+        let frameX86 = [];
+        let frameARM = [];
+        let stateX86 = new Map();
+        let stateARM = new Map();
+
+        const $ = (id) => document.getElementById(id);
+
+        function tagClass(kind) {
+          if (kind === "buf") return "bufTag";
+          if (kind === "saved") return "savedTag";
+          return "retTag";
+        }
+
+        function modeLabel() {
+          return modeBits === 64 ? "64-bit" : "32-bit";
+        }
+
+        function buildFrames() {
+          // LOW -> HIGH (top -> bottom)
+
+          if (modeBits === 64) {
+            SLOT_BYTES = 8;
+            BUFFER_SLOTS = BUFFER_BYTES / SLOT_BYTES; // 2
+
+            frameX86 = [
+              {
+                id: "buf0",
+                name: "buffer[0..7]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7fffffffe2a0",
+              },
+              {
+                id: "buf1",
+                name: "buffer[8..15]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7fffffffe2a8",
+              },
+              {
+                id: "loc1",
+                name: "(locals/pad)",
+                tag: "—",
+                kind: "saved",
+                addr: "0x7fffffffe2b0",
+              },
+              {
+                id: "rbp",
+                name: "Saved RBP",
+                tag: "SAVED",
+                kind: "saved",
+                addr: "0x7fffffffe2b8",
+              },
+              {
+                id: "ret",
+                name: "Return Address",
+                tag: "RET",
+                kind: "ret",
+                addr: "0x7fffffffe2c0",
+              },
+            ];
+
+            frameARM = [
+              {
+                id: "buf0",
+                name: "buffer[0..7]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7effffd8",
+              },
+              {
+                id: "buf1",
+                name: "buffer[8..15]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7effffe0",
+              },
+              {
+                id: "loc1",
+                name: "(locals/pad)",
+                tag: "—",
+                kind: "saved",
+                addr: "0x7effffe8",
+              },
+              {
+                id: "fp",
+                name: "Saved FP (x29)",
+                tag: "SAVED",
+                kind: "saved",
+                addr: "0x7efffff0",
+              },
+              {
+                id: "lr",
+                name: "Saved LR (x30)",
+                tag: "RET",
+                kind: "ret",
+                addr: "0x7efffff8",
+              },
+            ];
+          } else {
+            SLOT_BYTES = 4;
+            BUFFER_SLOTS = BUFFER_BYTES / SLOT_BYTES; // 4
+
+            frameX86 = [
+              {
+                id: "buf0",
+                name: "buffer[0..3]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0xbffff1a0",
+              },
+              {
+                id: "buf1",
+                name: "buffer[4..7]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0xbffff1a4",
+              },
+              {
+                id: "buf2",
+                name: "buffer[8..11]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0xbffff1a8",
+              },
+              {
+                id: "buf3",
+                name: "buffer[12..15]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0xbffff1ac",
+              },
+              {
+                id: "ebp",
+                name: "Saved EBP",
+                tag: "SAVED",
+                kind: "saved",
+                addr: "0xbffff1b0",
+              },
+              {
+                id: "ret",
+                name: "Return Address",
+                tag: "RET",
+                kind: "ret",
+                addr: "0xbffff1b4",
+              },
+            ];
+
+            frameARM = [
+              {
+                id: "buf0",
+                name: "buffer[0..3]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7efffda0",
+              },
+              {
+                id: "buf1",
+                name: "buffer[4..7]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7efffda4",
+              },
+              {
+                id: "buf2",
+                name: "buffer[8..11]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7efffda8",
+              },
+              {
+                id: "buf3",
+                name: "buffer[12..15]",
+                tag: "BUF",
+                kind: "buf",
+                addr: "0x7efffdac",
+              },
+              {
+                id: "fp",
+                name: "Saved FP (r11)",
+                tag: "SAVED",
+                kind: "saved",
+                addr: "0x7efffdb0",
+              },
+              {
+                id: "lr",
+                name: "Saved LR (r14)",
+                tag: "RET",
+                kind: "ret",
+                addr: "0x7efffdb4",
+              },
+            ];
+          }
+        }
+
+        function setHeaders() {
+          $("modeBtn").textContent = `Mode: ${modeLabel()}`;
+          $("modeHint").textContent = `slot = ${SLOT_BYTES} bytes`;
+
+          $("x86Title").textContent =
+            modeBits === 64 ? "x86-64 (System V ABI)" : "x86 (IA-32 cdecl)";
+          $("x86Mini").innerHTML = `
+      <div><span class="tag retTag">RET on stack</span></div>
+      <div>return = <span style="color:rgba(232,238,252,.95);font-family:var(--mono)">ret</span></div>
+      <div>control = <span style="color:rgba(232,238,252,.95);font-family:var(--mono)">${modeBits === 64 ? "RIP" : "EIP"}</span></div>
+    `;
+
+          $("armTitle").textContent =
+            modeBits === 64 ? "ARM64 / AArch64 (AAPCS64)" : "ARM32 (AAPCS)";
+          $("armMini").innerHTML = `
+      <div><span class="tag savedTag">LR register</span> → <span class="tag retTag">saved LR</span></div>
+      <div>call = <span style="color:rgba(232,238,252,.95);font-family:var(--mono)">${modeBits === 64 ? "bl" : "bl"}</span></div>
+      <div>return = <span style="color:rgba(232,238,252,.95);font-family:var(--mono)">${modeBits === 64 ? "ret" : "bx lr"}</span></div>
+    `;
+
+          $("x86Model").textContent = `call vuln()
+  pushes return address on stack
+prologue saves frame pointer & allocates locals
+overflow overwrites:
+  buffer → saved FP → return address`;
+
+          $("armModel").textContent = `bl vuln
+  LR = return address
+prologue
+  save FP/LR to stack (typical)
+overflow overwrites:
+  buffer → saved FP → saved LR`;
+        }
+
+        function buildStack(containerId, frame, stateMap) {
+          const root = $(containerId);
+          root.innerHTML = "";
+
+          // Insert overlay first
+          const overlay = document.createElement("div");
+          overlay.className = "bufOverlay";
+          overlay.id = `${containerId}_bufOverlay`;
+          overlay.innerHTML = `<div class="label">char buffer[${BUFFER_BYTES}]</div>`;
+          root.appendChild(overlay);
+
+          frame.forEach((cell) => {
+            stateMap.set(cell.id, "");
+            const el = document.createElement("div");
+            el.className = "cell";
+            el.id = `${containerId}_${cell.id}`;
+
+            const row1 = document.createElement("div");
+            row1.className = "row1";
+
+            const left = document.createElement("div");
+            left.style.display = "flex";
+            left.style.gap = "8px";
+            left.style.alignItems = "center";
+
+            const tag = document.createElement("span");
+            tag.className = `tag ${tagClass(cell.kind)}`;
+            tag.textContent = cell.tag;
+
+            const name = document.createElement("span");
+            name.className = "name";
+            name.textContent = cell.name;
+
+            left.appendChild(tag);
+            left.appendChild(name);
+
+            const addr = document.createElement("span");
+            addr.className = "addr";
+            addr.textContent = cell.addr;
+
+            row1.appendChild(left);
+            row1.appendChild(addr);
+
+            const bytes = document.createElement("div");
+            bytes.className = "bytes";
+            bytes.id = `${containerId}_${cell.id}_bytes`;
+            bytes.textContent = "";
+
+            el.appendChild(row1);
+            el.appendChild(bytes);
+            root.appendChild(el);
+          });
+        }
+
+        function updateBufferOverlay(containerId) {
+          const overlay = $(`${containerId}_bufOverlay`);
+          if (!overlay) return;
+
+          const firstBuf = $(`${containerId}_buf0`);
+          const lastBuf = $(`${containerId}_buf${BUFFER_SLOTS - 1}`);
+          if (!firstBuf || !lastBuf) {
+            overlay.style.display = "none";
+            return;
+          }
+
+          const root = $(containerId);
+          const rRect = root.getBoundingClientRect();
+          const aRect = firstBuf.getBoundingClientRect();
+          const bRect = lastBuf.getBoundingClientRect();
+
+          const top = aRect.top - rRect.top - 6;
+          const bottom = bRect.bottom - rRect.top + 6;
+          const height = Math.max(0, bottom - top);
+
+          overlay.style.top = `${top}px`;
+          overlay.style.height = `${height}px`;
+          overlay.style.display = "block";
+        }
+
+        function hidePointer(ptrId) {
+          const ptr = $(ptrId);
+          if (!ptr) return;
+          ptr.style.opacity = "0";
+        }
+
+        function showPointer(ptrId, containerPrefix, cellId) {
+          const ptr = $(ptrId);
+          const cell = $(`${containerPrefix}_${cellId}`);
+          if (!ptr || !cell) return;
+
+          const wrap = cell.closest(".stackWrap");
+          const wrapRect = wrap.getBoundingClientRect();
+          const cellRect = cell.getBoundingClientRect();
+
+          const y = cellRect.top - wrapRect.top + cellRect.height / 2 - 8;
+          ptr.style.opacity = "1";
+          ptr.style.transform = `translateY(${y}px)`;
+        }
+
+        function setGlow(containerPrefix, cellId, level) {
+          const el = $(`${containerPrefix}_${cellId}`);
+          if (!el) return;
+          el.classList.remove("okGlow", "warnGlow", "badGlow");
+          if (level === "ok") el.classList.add("okGlow");
+          if (level === "warn") el.classList.add("warnGlow");
+          if (level === "bad") el.classList.add("badGlow");
+        }
+
+        function renderArmRegs({ note, corrupted }) {
+          if (modeBits === 64) {
+            const lr = corrupted
+              ? "0x4242424242424242 (corrupted)"
+              : "0x0000000000010488";
+            $("armRegs").textContent = `x30/LR = return address (register)
+saved x30 on stack = ${lr}
+SP grows downward (LOW shown at top)
+
+${note || ""}`;
+          } else {
+            const lr = corrupted ? "0x42424242 (corrupted)" : "0x00010488";
+            $("armRegs").textContent = `r14/LR = return address (register)
+saved r14 on stack = ${lr}
+SP grows downward (LOW shown at top)
+
+${note || ""}`;
+          }
+        }
+
+        function whichCell(frame, byteOffset) {
+          const slotIndex = Math.floor(byteOffset / SLOT_BYTES);
+          if (slotIndex < 0 || slotIndex >= frame.length) return null;
+          return frame[slotIndex];
+        }
+
+        function appendByte(containerPrefix, frame, stateMap, byteOffset, ch) {
+          const cell = whichCell(frame, byteOffset);
+          if (!cell) return { cell: null, overflowed: true };
+
+          const current = stateMap.get(cell.id) || "";
+          const displayChar = ch >= " " && ch <= "~" ? ch : ".";
+          stateMap.set(cell.id, current + displayChar);
+
+          const bytesEl = $(`${containerPrefix}_${cell.id}_bytes`);
+          if (bytesEl) bytesEl.textContent = stateMap.get(cell.id);
+
+          return { cell, overflowed: false };
+        }
+
+        function updateAfterWriteX86(cell) {
+          $("x86Where").textContent =
+            `writing: ${cell ? cell.name : "OUT OF FRAME"}`;
+          if (!cell) return;
+
+          if (cell.kind === "buf") setGlow("stackX86", cell.id, "ok");
+          if (cell.kind === "saved") setGlow("stackX86", cell.id, "warn");
+          if (cell.kind === "ret") {
+            setGlow("stackX86", cell.id, "bad");
+            const ex = modeBits === 64 ? "0x4242424242424242" : "0x42424242";
+            $("x86RIP").textContent = `after ret: ${ex} (example)`;
+          }
+        }
+
+        function updateAfterWriteARM(cell) {
+          $("armWhere").textContent =
+            `writing: ${cell ? cell.name : "OUT OF FRAME"}`;
+          if (!cell) return;
+
+          if (cell.kind === "buf") setGlow("stackARM", cell.id, "ok");
+          if (cell.kind === "saved") setGlow("stackARM", cell.id, "warn");
+          if (cell.kind === "ret") {
+            setGlow("stackARM", cell.id, "bad");
+            const ex = modeBits === 64 ? "0x4242424242424242" : "0x42424242";
+            $("armPC").textContent = `after return: ${ex} (example)`;
+            renderArmRegs({
+              corrupted: true,
+              note: "Saved LR overwritten → epilogue restores LR → return jumps attacker-controlled value.",
+            });
+          }
+        }
+
+        function endRun() {
+          running = false;
+          if (timer) clearInterval(timer);
+          timer = null;
+          $("globalStatus").textContent = "Done";
+          $("runBtn").disabled = false;
+          $("stepBtn").disabled = false;
+        }
+
+        function stepOnce() {
+          if (byteIndex >= payload.length) {
+            endRun();
+            return;
+          }
+
+          const ch = payload[byteIndex];
+
+          const wx = appendByte("stackX86", frameX86, stateX86, byteIndex, ch);
+          if (wx.cell) {
+            showPointer("ptrX86", "stackX86", wx.cell.id);
+            updateAfterWriteX86(wx.cell);
+          } else {
+            hidePointer("ptrX86");
+            $("x86Where").textContent = "writing: OUT OF FRAME";
+          }
+
+          const wa = appendByte("stackARM", frameARM, stateARM, byteIndex, ch);
+          if (wa.cell) {
+            showPointer("ptrARM", "stackARM", wa.cell.id);
+            updateAfterWriteARM(wa.cell);
+          } else {
+            hidePointer("ptrARM");
+            $("armWhere").textContent = "writing: OUT OF FRAME";
+          }
+
+          byteIndex += 1;
+          $("x86Byte").textContent = `byte: ${byteIndex}`;
+          $("armByte").textContent = `byte: ${byteIndex}`;
+
+          if (wx.cell && wx.cell.kind === "ret")
+            $("globalStatus").textContent = "x86: return address corrupted";
+          else if (wa.cell && wa.cell.kind === "ret")
+            $("globalStatus").textContent = "ARM: saved LR corrupted";
+          else if (byteIndex > 0) $("globalStatus").textContent = "Writing…";
+        }
+
+        function resetVisuals() {
+          if (timer) clearInterval(timer);
+          timer = null;
+          running = false;
+          byteIndex = 0;
+
+          frameX86.forEach((c) => stateX86.set(c.id, ""));
+          frameARM.forEach((c) => stateARM.set(c.id, ""));
+
+          frameX86.forEach((c) => {
+            const bytesEl = $(`stackX86_${c.id}_bytes`);
+            const cellEl = $(`stackX86_${c.id}`);
+            if (bytesEl) bytesEl.textContent = "";
+            if (cellEl)
+              cellEl.classList.remove("okGlow", "warnGlow", "badGlow");
+          });
+
+          frameARM.forEach((c) => {
+            const bytesEl = $(`stackARM_${c.id}_bytes`);
+            const cellEl = $(`stackARM_${c.id}`);
+            if (bytesEl) bytesEl.textContent = "";
+            if (cellEl)
+              cellEl.classList.remove("okGlow", "warnGlow", "badGlow");
+          });
+
+          hidePointer("ptrX86");
+          hidePointer("ptrARM");
+
+          $("globalStatus").textContent = "Ready";
+          $("x86Byte").textContent = "byte: 0";
+          $("armByte").textContent = "byte: 0";
+          $("x86Where").textContent = "writing: —";
+          $("armWhere").textContent = "writing: —";
+          $("x86RIP").textContent = "after ret: —";
+          $("armPC").textContent = "after return: —";
+
+          renderArmRegs({
+            corrupted: false,
+            note: "LR holds return address after bl; typical prologue saves LR to stack.",
+          });
+
+          $("runBtn").disabled = false;
+          $("stepBtn").disabled = false;
+
+          // keep overlays correct
+          updateBufferOverlay("stackX86");
+          updateBufferOverlay("stackARM");
+        }
+
+        function startRun() {
+          // Rerun clears stack first
+          resetVisuals();
+
+          payload = String($("payload").value || "");
+          speedMs = parseInt($("speed").value, 10) || 140;
+          $("speedLabel").textContent = `${speedMs} ms/byte`;
+
+          if (payload.length === 0) {
+            $("globalStatus").textContent = "Payload empty";
+            return;
+          }
+
+          running = true;
+          $("globalStatus").textContent = "Writing…";
+          $("runBtn").disabled = true;
+          $("stepBtn").disabled = true;
+
+          timer = setInterval(() => {
+            stepOnce();
+            if (byteIndex >= payload.length) {
+              endRun();
+            }
+          }, speedMs);
+        }
+
+        function rebuildAll() {
+          // Stop any run
+          if (timer) clearInterval(timer);
+          timer = null;
+          running = false;
+
+          // build frames for mode
+          buildFrames();
+          setHeaders();
+
+          // reset maps
+          stateX86 = new Map();
+          stateARM = new Map();
+
+          // rebuild stacks
+          buildStack("stackX86", frameX86, stateX86);
+          buildStack("stackARM", frameARM, stateARM);
+
+          // badges
+          $("x86BufBadge").textContent =
+            `allocated buffer: ${BUFFER_BYTES} bytes`;
+          $("armBufBadge").textContent =
+            `allocated buffer: ${BUFFER_BYTES} bytes`;
+
+          // paint overlays after layout
+          requestAnimationFrame(() => {
+            updateBufferOverlay("stackX86");
+            updateBufferOverlay("stackARM");
+            resetVisuals();
+          });
+        }
+
+        // ===== UI wiring =====
+        $("runBtn").addEventListener("click", startRun);
+        $("resetBtn").addEventListener("click", resetVisuals);
+        $("stepBtn").addEventListener("click", () => {
+          if (running) return;
+          payload = String($("payload").value || "");
+          if (payload.length === 0) {
+            $("globalStatus").textContent = "Payload empty";
+            return;
+          }
+          $("globalStatus").textContent = "Stepping…";
+          stepOnce();
+          if (byteIndex >= payload.length)
+            $("globalStatus").textContent = "Done";
+        });
+
+        $("speed").addEventListener("input", () => {
+          speedMs = parseInt($("speed").value, 10) || 140;
+          $("speedLabel").textContent = `${speedMs} ms/byte`;
+          if (running) {
+            clearInterval(timer);
+            timer = setInterval(() => {
+              stepOnce();
+              if (byteIndex >= payload.length) {
+                endRun();
+              }
+            }, speedMs);
+          }
+        });
+
+        $("modeBtn").addEventListener("click", () => {
+          modeBits = modeBits === 64 ? 32 : 64;
+          rebuildAll();
+        });
+
+        window.addEventListener("resize", () => {
+          updateBufferOverlay("stackX86");
+          updateBufferOverlay("stackARM");
+        });
+
+        // ===== initial build =====
+        rebuildAll();
+      })();
+    </script>
+  </body>
+</html>
