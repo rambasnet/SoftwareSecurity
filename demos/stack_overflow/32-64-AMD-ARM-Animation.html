@@ -100,15 +100,15 @@
       .content {
         padding: 14px;
         display: grid;
-        grid-template-columns: 260px 1fr;
+        grid-template-columns: 310px 1fr;
         gap: 14px;
       }
 
       .stackWrap {
         position: relative;
         border: 1px solid rgba(34, 49, 79, 0.8);
-        border-radius: 12px;
-        padding: 10px 10px 10px 34px;
+        border-radius: 4px;
+        padding: 40px 4px 4px 4px;
         background: rgba(16, 24, 39, 0.6);
         overflow: visible;
       }
@@ -128,6 +128,7 @@
         font-size: 10px;
         user-select: none;
         opacity: 0.85;
+        z-index: 10;
       }
       .memLabel .arrow {
         font-size: 12px;
@@ -138,7 +139,7 @@
         position: relative;
         display: flex;
         flex-direction: column; /* LOW(top) -> HIGH(bottom) */
-        gap: 8px;
+        gap: 4px;
       }
 
       .cell {
