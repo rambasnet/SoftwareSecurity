@@ -1,6 +1,6 @@
-// hidden_password.c
-// Build (Linux/macOS):  gcc -O0 -fno-pie -no-pie hidden_password.c -o hidden_password
-// Build (Windows, MinGW): gcc -O0 hidden_password.c -o hidden_password.exe
+// demo.c
+// Build (Linux/macOS):  gcc -O0 -fno-pie -no-pie demo.c -o hidden_password
+// Build (Windows, MinGW): gcc -O0 demo.c -o hidden_password.exe
 // Tip: -O0 keeps it easy to read in Ghidra.
 
 #include <stdio.h>

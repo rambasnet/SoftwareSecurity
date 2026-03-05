@@ -46,3 +46,6 @@ core.*
 nessus_plugins
 nessus-fetch.db
 nessusd.db
+
+*.deb
+
