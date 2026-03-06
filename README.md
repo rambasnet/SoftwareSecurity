@@ -19,10 +19,8 @@
 - make
 - Jupyter Notebook
 - Python3
-- gdb
 - peda - python exploit development assistant for gdb
 - sqlite3 C/C++ library
-- sqlitebrowser
 - pwntools
 - Docker and docker-compose
 
@@ -38,11 +36,8 @@ sudo apt install build-essential # C/C++ compiler, make, etc.
 sudo apt install ccache
 sudo apt install libboost-all-dev
 sudo apt install gcc-multilib g++-multilib # library for compiling 32-bit; won't work on Mac M1/M2
-sudo apt install gdb
-sudo apt install gdbserver
 sudo apt install git
 sudo apt install libsqlite3-dev # C++ library for Sqlite
-sudo apt install sqlitebrowser
 sudo apt install python3-pip
 sudo apt install python3-pwntools
 ```
