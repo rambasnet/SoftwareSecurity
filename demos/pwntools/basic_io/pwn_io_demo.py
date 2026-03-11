@@ -3,8 +3,9 @@
 import pwn
 
 # run process to interact with
-io = pwn.process('./io_demo.exe')
+io = pwn.process('./a.out')
 
+# io.interactive()
 # programmatically receive and use data
 
 prompt = io.recvline(False)
@@ -22,8 +23,6 @@ prompt = io.recvuntil(b"address:")
 print(f"prompt = {prompt}")
 
 io.sendline(b"111 North Street GJ CO 1111!")
-print(f'{io.recv()}') # receive and discard \n
-print(f'{io.recvline()}') # includes \n
+print(f'{io.recv()}')  # receive and discard \n
+print(f'{io.recvline()}')  # includes \n
 print(io.recvline().decode('utf-8'), end='')
-
-#io.interactive()
