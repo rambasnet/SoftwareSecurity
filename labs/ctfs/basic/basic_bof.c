@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include "util.h"
 
-void vuln()
+void vuln(char *input)
 {
     struct
     {
@@ -27,26 +27,22 @@ void vuln()
     // Prints out the stack before modification
     visualize(frame.buff, frame.padding, &frame.notsecret, &frame.secret);
 
-    printf("Input some text: ");
-    gets(frame.buff); // This is a vulnerable call!
+    // Vulnerable function call!
+    strcpy(frame.buff, input);
 
     // Prints out the stack after modification
     visualize(frame.buff, frame.padding, &frame.notsecret, &frame.secret);
 
+    if (frame.notsecret != 0xffffff00)
+    {
+        puts("Uhmm... maybe you overflowed too much. Try deleting a few characters.");
+    }
     // Check if secret has changed.
-    if (frame.secret == 0x67616c66)
+    else if (frame.secret != 0xdeadbeef)
     {
         puts("You did it! Congratuations!");
         print_flag(); // Print out the flag. You deserve it.
         return;
-    }
-    else if (frame.notsecret != 0xffffff00)
-    {
-        puts("Uhmm... maybe you overflowed too much. Try deleting a few characters.");
-    }
-    else if (frame.secret != 0xdeadbeef)
-    {
-        puts("Wow you overflowed the secret value! Now try controlling the value of it!");
     }
     else
     {
@@ -56,10 +52,17 @@ void vuln()
     exit(0);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    setbuf(stdout, NULL);
-    setbuf(stdin, NULL);
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s <input>\n", argv[0]);
+        return 1;
+    }
+    // setbuf(stdout, NULL);
+    // setbuf(stdin, NULL);
     safeguard();
-    vuln();
+    vuln(argv[1]);
+    puts("Goodbye!");
+    return 0;
 }
