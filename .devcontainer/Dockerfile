@@ -7,6 +7,7 @@ RUN apt-get update \
     gcc-multilib \
     g++-multilib \
     git \
+    git-lfs \
     gdb \
     gdb-multiarch \
     checksec \
