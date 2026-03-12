@@ -1,0 +1,4 @@
+jupyterlab
+pwntools
+ropper
+ROPGadget
