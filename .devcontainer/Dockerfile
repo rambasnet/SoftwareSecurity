@@ -19,6 +19,7 @@ RUN apt-get update \
     ruby-full \
     wget \
     curl \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Install pwndbg, a GDB plugin that provides enhanced debugging features for binary exploitation.
