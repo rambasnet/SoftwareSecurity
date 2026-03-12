@@ -4,16 +4,10 @@ set -euo pipefail
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
-sudo sysctl -w kernel.core_pattern=core
+ulimit -c unlimited
+if ! sudo sysctl -w kernel.core_pattern=core >/dev/null 2>&1; then
+  echo "Warning: unable to set kernel.core_pattern (likely read-only in this container); continuing."
+fi
 
 # Install popular pwn helper tools from Python ecosystem.
 python -m pip install ropper ROPGadget
-
-# Install GEF and auto-load it in gdb.
-if [ ! -f "$HOME/.gdbinit-gef.py" ]; then
-  wget -q -O "$HOME/.gdbinit-gef.py" https://gef.blah.cat/sh
-fi
-
-if [ ! -f "$HOME/.gdbinit" ] || ! grep -q "source ~/.gdbinit-gef.py" "$HOME/.gdbinit"; then
-  echo "source ~/.gdbinit-gef.py" >> "$HOME/.gdbinit"
-fi

@@ -20,7 +20,12 @@ RUN apt-get update \
     wget \
     curl \
     netcat-openbsd \
+    python-is-python3 \
     && rm -rf /var/lib/apt/lists/*
+
+# Make sudo python/python3 resolve to the same 3.11 toolchain path used by the devcontainer feature.
+RUN ln -sf /usr/local/python/current/bin/python /usr/local/bin/python \
+    && ln -sf /usr/local/python/current/bin/python3 /usr/local/bin/python3
 
 # Install pwndbg, a GDB plugin that provides enhanced debugging features for binary exploitation.
 RUN curl --proto '=https' --tlsv1.2 -LsSf 'https://install.pwndbg.re' | sh -s -- -t pwndbg-gdb
