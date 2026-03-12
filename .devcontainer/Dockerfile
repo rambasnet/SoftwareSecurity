@@ -6,6 +6,7 @@ RUN apt-get update \
     build-essential \
     gcc-multilib \
     g++-multilib \
+    git \
     gdb \
     gdb-multiarch \
     checksec \
@@ -22,3 +23,9 @@ RUN apt-get update \
 
 # Install pwndbg, a GDB plugin that provides enhanced debugging features for binary exploitation.
 RUN curl --proto '=https' --tlsv1.2 -LsSf 'https://install.pwndbg.re' | sh -s -- -t pwndbg-gdb
+
+# Install PEDA and provide a dedicated launcher to avoid conflicting with pwndbg defaults.
+RUN git clone --depth 1 https://github.com/longld/peda.git /opt/peda \
+    && chmod -R a+rX /opt/peda \
+    && printf '%s\n' '#!/usr/bin/env bash' 'exec gdb -q -ex "source /opt/peda/peda.py" "$@"' > /usr/local/bin/gdb-peda \
+    && chmod +x /usr/local/bin/gdb-peda
