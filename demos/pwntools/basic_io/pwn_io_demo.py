@@ -3,7 +3,7 @@
 import pwn
 
 # run process to interact with
-io = pwn.process('./a.out')
+io = pwn.process('./io_demo.exe')
 
 # io.interactive()
 # programmatically receive and use data
