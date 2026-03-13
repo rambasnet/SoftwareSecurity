@@ -4,5 +4,5 @@
 
 while true
 do
-    nc -v -l 127.0.0.1 -p 1234 -e vuln.exe
+    nc -v -l -p 1234 -e vuln.exe
 done

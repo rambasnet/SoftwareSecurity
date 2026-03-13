@@ -20,7 +20,7 @@ RUN apt-get update \
     ruby-full \
     wget \
     curl \
-    netcat-openbsd \
+    netcat-traditional \
     python-is-python3 \
     && rm -rf /var/lib/apt/lists/*
 

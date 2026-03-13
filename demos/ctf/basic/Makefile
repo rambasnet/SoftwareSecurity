@@ -24,7 +24,8 @@ build:
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES) -o $(PROGRAM)
 
 disable:
-	# must run make with sudo to disable randomaize_va_space
+	# must run make with sudo to disable randomize_va_space
+	# Note: randomize_va_space is read_only on Codespace
 	echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 
 run:
