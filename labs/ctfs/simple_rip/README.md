@@ -1,6 +1,6 @@
-# Overwrite Specific Variable (Controlled BOF)
+# Control Return Address (Control EIP/RIP) CTF
 
-1. Goal of this CTF is to get the flag by exploiting a buffer overflow vulnerability in the provided C code.
+1. Goal of this CTF is to get the flag by exploiting a buffer overflow vulnerability to overflow return address and control EIP/RIP in the provided C code.
 
 ## Instructions
 1. Download all the files (.h, .c, Makefile) in the current directory.
