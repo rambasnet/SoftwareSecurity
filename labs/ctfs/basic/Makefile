@@ -12,8 +12,11 @@ PROGRAM_NAME = basic_bof.exe
 build:
 	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES) -o $(PROGRAM_NAME)
 	# disable ASLR
-	@echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
-	@echo "Built and disabled randomize_va_space!"
+	#@echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+	#@echo "Built and disabled randomize_va_space!"
+
+run:
+	@setarch $(uname -m) -R ./$(PROGRAM_NAME)
 
 # make clean triggers the following rule
 .PHONY: clean
