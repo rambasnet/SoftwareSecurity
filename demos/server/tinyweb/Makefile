@@ -1,8 +1,7 @@
 # rule for compiling program
 
 COMPILER = g++
-COMPILER_FLAGS = -c -g -Wall -std=c++17 -m32
-BUILD_FLAGS = -m32 -fno-stack-protector -z execstack -no-pie
+BUILD_FLAGS = -m32 -g -fno-stack-protector -z execstack -no-pie
 
 # list .cpp files separated by space
 CPP_FILES = main.cpp
@@ -18,9 +17,9 @@ all: build run
 .PHONY: build
 build:
 	# compiles .cpp to object file .o
-	$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
+	#$(COMPILER) $(COMPILER_FLAGS) $(CPP_FILES)
 	# builds executable from object files
-	$(COMPILER) $(BUILD_FLAGS) -o $(PROGRAM_NAME) *.o
+	$(COMPILER) $(BUILD_FLAGS) -o $(PROGRAM_NAME) $(CPP_FILES)
 	chown root:root $(PROGRAM_NAME)
 	chmod u+s $(PROGRAM_NAME)
 
@@ -30,7 +29,6 @@ build:
 .PHONY: run
 run:
 	./$(PROGRAM_NAME)
-
 # rule for clean up
 # make clean triggers the following rule
 .PHONY: clean
