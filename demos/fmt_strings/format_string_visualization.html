@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Format String Vulnerability Visualizer</title>
+    <style>
+      :root {
+        --bg-0: #081016;
+        --bg-1: #10202d;
+        --panel: rgba(9, 20, 30, 0.85);
+        --text: #e8f2fb;
+        --muted: #9ab0c4;
+        --accent: #5ed4c8;
+        --warn: #ffbd59;
+        --danger: #ff6b6b;
+        --ok: #4ad57a;
+        --line: #2c495f;
+        --chip: #173043;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(ellipse at 10% 0%, #163a52 0%, transparent 48%),
+          radial-gradient(ellipse at 95% 10%, #3a2f1f 0%, transparent 45%),
+          linear-gradient(160deg, var(--bg-0), var(--bg-1));
+        padding: 18px;
+      }
+
+      .app {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--panel);
+        box-shadow: 0 20px 42px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+      }
+
+      .top {
+        padding: 18px;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        gap: 10px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+        letter-spacing: 0.2px;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+
+      .controls-left {
+        display: grid;
+        gap: 8px;
+      }
+
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 72px;
+        resize: vertical;
+        border-radius: 10px;
+        border: 1px solid #395874;
+        background: #0e2030;
+        color: #f0f7ff;
+        padding: 10px;
+        font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+        font-size: 0.9rem;
+      }
+
+      .pill {
+        border-radius: 999px;
+        border: 1px solid #395874;
+        background: var(--chip);
+        color: #d7ebfb;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+
+      .pill strong {
+        color: white;
+      }
+
+      button,
+      select {
+        border: 1px solid #426583;
+        border-radius: 10px;
+        background: #1a3950;
+        color: #ecf5ff;
+        padding: 8px 11px;
+        font-size: 0.88rem;
+      }
+
+      button {
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          background 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        background: #214a68;
+      }
+
+      .mode {
+        display: inline-flex;
+        border: 1px solid #426583;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .mode button {
+        border: none;
+        border-radius: 0;
+      }
+
+      .mode button.active {
+        background: #2d607f;
+      }
+
+      .main {
+        padding: 16px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(12, 27, 40, 0.8);
+        padding: 12px;
+      }
+
+      .panel h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .code {
+        margin: 0;
+        padding: 10px;
+        border-radius: 10px;
+        background: #0c1f2d;
+        border: 1px solid #2e5068;
+        font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+
+      .code .line {
+        display: block;
+      }
+
+      .code .line.active {
+        background: rgba(94, 212, 200, 0.16);
+      }
+
+      .vars {
+        display: grid;
+        gap: 6px;
+      }
+
+      .var-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #112637;
+        border: 1px solid #2f5169;
+        border-radius: 8px;
+        padding: 7px 9px;
+        font-size: 0.88rem;
+      }
+
+      .var-item .label {
+        color: #c2d8ea;
+      }
+
+      .var-item .value {
+        font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      }
+
+      .var-item.alert {
+        border-color: #8f3d49;
+        background: #3a1d28;
+      }
+
+      .stack {
+        display: grid;
+        gap: 6px;
+      }
+
+      .slot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #36566f;
+        background: #11283a;
+        border-radius: 8px;
+        padding: 7px 8px;
+        font-size: 0.84rem;
+      }
+
+      .slot.active {
+        border-color: #73e7dd;
+        box-shadow: inset 0 0 0 1px #73e7dd;
+      }
+
+      .slot .idx {
+        color: #b7d2e9;
+      }
+
+      .slot .raw {
+        font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      }
+
+      .tokens {
+        min-height: 70px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-content: flex-start;
+      }
+
+      .token {
+        padding: 5px 8px;
+        border-radius: 8px;
+        background: #173348;
+        border: 1px solid #325874;
+        font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+      }
+
+      .token.current {
+        border-color: #73e7dd;
+        background: #1e4d67;
+      }
+
+      .terminal {
+        min-height: 140px;
+        border: 1px solid #2f526a;
+        border-radius: 10px;
+        background: #091723;
+        padding: 10px;
+        font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+        font-size: 0.84rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .event {
+        margin-top: 8px;
+        border-top: 1px dashed #2d4e66;
+        padding-top: 8px;
+        color: #d3e4f2;
+        min-height: 46px;
+      }
+
+      .danger {
+        color: var(--danger);
+      }
+
+      .warn {
+        color: var(--warn);
+      }
+
+      .ok {
+        color: var(--ok);
+      }
+
+      @media (max-width: 940px) {
+        .controls {
+          grid-template-columns: 1fr;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <section class="top">
+        <h1>Format String Vulnerability Visualizer</h1>
+        <p class="subtitle">
+          Watch how <code>printf(user_input)</code> can leak memory with
+          <code>%x</code>/<code>%s</code> and write to memory with
+          <code>%n</code>, then compare it to safe formatting.
+        </p>
+
+        <div class="controls">
+          <div class="controls-left">
+            <textarea id="fmtInput">Hello %x %x SECRET:%s %n</textarea>
+            <div class="row">
+              <span class="pill"
+                ><strong>Tip:</strong> Try <code>%x %x %x</code>,
+                <code>%s</code>, <code>%n</code>, and include
+                <code>0x0804a020</code> to target secret writes</span
+              >
+              <label class="pill" for="presetSelect"
+                ><strong>Preset</strong></label
+              >
+              <select id="presetSelect">
+                <option value="leak">Memory leak (%x)</option>
+                <option value="secret">Secret read (%s)</option>
+                <option value="write">Unauthorized write (%n)</option>
+                <option value="secretWrite">Overwrite secret via %n</option>
+                <option value="mixed" selected>Mixed attack</option>
+              </select>
+              <button id="loadPresetBtn">Load Preset</button>
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <div class="mode" role="group" aria-label="Mode">
+              <button id="vulnModeBtn" class="active">Vulnerable</button>
+              <button id="safeModeBtn">Safe</button>
+            </div>
+            <div class="row" style="margin-top: 8px">
+              <button id="startBtn">Start</button>
+              <button id="stepBtn">Step</button>
+              <button id="autoBtn">Auto Play</button>
+              <button id="resetBtn">Reset</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="main">
+        <div class="grid">
+          <div class="panel">
+            <h2>Code Path</h2>
+            <pre class="code" id="codeBlock"></pre>
+            <div class="event" id="eventBox">Press Start to parse input.</div>
+          </div>
+
+          <div class="panel">
+            <h2>Program State</h2>
+            <div class="vars" id="vars"></div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <h2>Argument Stack (Simulated)</h2>
+            <div class="stack" id="stack"></div>
+          </div>
+
+          <div class="panel">
+            <h2>Format Tokens</h2>
+            <div class="tokens" id="tokens"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Output</h2>
+          <div class="terminal" id="terminal"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const SECRET_ADDR = "0x0804a020";
+      const DEFAULT_SECRET = "TOP_SECRET_TOKEN";
+
+      const PRESETS = {
+        leak: "%x %x %x %x",
+        secret: "Leaked secret = %s",
+        write: "AAAA%n",
+        secretWrite: `${SECRET_ADDR}AAAA%n`,
+        mixed: "Hello %x %x SECRET:%s %n",
+      };
+
+      const state = {
+        vulnerable: true,
+        input: "",
+        tokens: [],
+        tokenIndex: 0,
+        argIndex: 0,
+        output: "",
+        running: false,
+        timerId: null,
+        vars: {
+          isAdmin: 0,
+          authLevel: 1,
+          secret: DEFAULT_SECRET,
+          secretAddress: SECRET_ADDR,
+        },
+        memory: {
+          "0x0804a020": "secret",
+          "0x0804a010": "isAdmin",
+        },
+        args: [
+          "0xbffff124",
+          "0x41414141",
+          "0x0804a020",
+          "0x0804a010",
+          "0xdeadbeef",
+          "0x13371337",
+        ],
+        injectedWriteTarget: null,
+      };
+
+      const el = {
+        fmtInput: document.getElementById("fmtInput"),
+        presetSelect: document.getElementById("presetSelect"),
+        loadPresetBtn: document.getElementById("loadPresetBtn"),
+        vulnModeBtn: document.getElementById("vulnModeBtn"),
+        safeModeBtn: document.getElementById("safeModeBtn"),
+        startBtn: document.getElementById("startBtn"),
+        stepBtn: document.getElementById("stepBtn"),
+        autoBtn: document.getElementById("autoBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        codeBlock: document.getElementById("codeBlock"),
+        vars: document.getElementById("vars"),
+        stack: document.getElementById("stack"),
+        tokens: document.getElementById("tokens"),
+        terminal: document.getElementById("terminal"),
+        eventBox: document.getElementById("eventBox"),
+      };
+
+      const vulnerableCode = [
+        "char user_input[128];",
+        "gets(user_input);",
+        "printf(user_input);   // VULNERABLE",
+        "if (isAdmin) open_shell();",
+      ];
+
+      const safeCode = [
+        "char user_input[128];",
+        "fgets(user_input, sizeof(user_input), stdin);",
+        'printf("%s", user_input);  // SAFE',
+        "if (isAdmin) open_shell();",
+      ];
+
+      function setMode(vulnerable) {
+        state.vulnerable = vulnerable;
+        el.vulnModeBtn.classList.toggle("active", vulnerable);
+        el.safeModeBtn.classList.toggle("active", !vulnerable);
+        renderCode();
+        resetSimulation();
+      }
+
+      function tokenizeFormatString(input) {
+        const parts = [];
+        for (let i = 0; i < input.length; i += 1) {
+          if (input[i] === "%" && i + 1 < input.length) {
+            const spec = "%" + input[i + 1];
+            if (["%x", "%s", "%n", "%d", "%p"].includes(spec)) {
+              parts.push({ type: "spec", value: spec });
+              i += 1;
+              continue;
+            }
+          }
+          parts.push({ type: "text", value: input[i] });
+        }
+        return parts;
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function renderCode() {
+        const lines = state.vulnerable ? vulnerableCode : safeCode;
+        const activeLine = state.running ? 3 : 0;
+        el.codeBlock.innerHTML = lines
+          .map((line, idx) => {
+            const cls = idx === activeLine - 1 ? "line active" : "line";
+            return `<span class="${cls}">${escapeHtml(line)}</span>`;
+          })
+          .join("");
+      }
+
+      function renderVars() {
+        const values = [
+          { label: "isAdmin", value: state.vars.isAdmin },
+          { label: "authLevel", value: state.vars.authLevel },
+          { label: "secretAddress", value: state.vars.secretAddress },
+          { label: "secret", value: state.vars.secret },
+        ];
+        el.vars.innerHTML = values
+          .map((v) => {
+            const alert =
+              (v.label === "isAdmin" && Number(v.value) !== 0) ||
+              (v.label === "secret" && v.value !== DEFAULT_SECRET);
+            const className = alert ? "var-item alert" : "var-item";
+            return `<div class="${className}"><span class="label">${v.label}</span><span class="value">${escapeHtml(String(v.value))}</span></div>`;
+          })
+          .join("");
+      }
+
+      function renderStack() {
+        el.stack.innerHTML = state.args
+          .map((arg, i) => {
+            const active = i === state.argIndex && state.running;
+            return `<div class="slot ${active ? "active" : ""}"><span class="idx">arg#${i + 1}</span><span class="raw">${escapeHtml(arg)}</span></div>`;
+          })
+          .join("");
+      }
+
+      function renderTokens() {
+        el.tokens.innerHTML = state.tokens
+          .map((token, i) => {
+            const current = i === state.tokenIndex && state.running;
+            const cls = current ? "token current" : "token";
+            const shown =
+              token.type === "text"
+                ? token.value.replace(" ", "␠")
+                : token.value;
+            return `<span class="${cls}">${escapeHtml(shown)}</span>`;
+          })
+          .join("");
+      }
+
+      function updateTerminal() {
+        el.terminal.textContent = state.output || "(no output yet)";
+      }
+
+      function setEvent(text, level = "") {
+        const classAttr = level ? ` class="${level}"` : "";
+        el.eventBox.innerHTML = `<span${classAttr}>${escapeHtml(text)}</span>`;
+      }
+
+      function consumeArg() {
+        const arg = state.args[state.argIndex % state.args.length];
+        state.argIndex += 1;
+        return arg;
+      }
+
+      function processToken(token) {
+        if (!state.vulnerable) {
+          state.output += token.value;
+          if (token.type === "spec") {
+            setEvent(
+              `Safe mode: '${token.value}' printed literally, not interpreted.`,
+              "ok",
+            );
+          } else {
+            setEvent("Safe mode: raw user text printed as data.", "ok");
+          }
+          return;
+        }
+
+        if (token.type === "text") {
+          state.output += token.value;
+          setEvent("Literal character copied to output.");
+          return;
+        }
+
+        if (token.value === "%x" || token.value === "%p") {
+          const arg = consumeArg();
+          state.output += arg;
+          setEvent(
+            `Leak: ${token.value} consumed stack arg and printed ${arg}.`,
+            "warn",
+          );
+          return;
+        }
+
+        if (token.value === "%d") {
+          const arg = consumeArg();
+          const num = Number.parseInt(arg, 16) || 0;
+          state.output += String(num);
+          setEvent(`%d interpreted stack bytes as integer ${num}.`, "warn");
+          return;
+        }
+
+        if (token.value === "%s") {
+          const ptr = consumeArg();
+          const memTarget = state.memory[ptr];
+          if (memTarget) {
+            if (memTarget === "isAdmin") {
+              state.output += String(state.vars.isAdmin);
+            } else if (memTarget === "secret") {
+              state.output += state.vars.secret;
+            } else {
+              state.output += String(memTarget);
+            }
+            setEvent(
+              `Read via pointer ${ptr}: exposed '${memTarget}'.`,
+              "danger",
+            );
+          } else {
+            state.output += "<invalid_ptr>";
+            setEvent(
+              `Read via pointer ${ptr} failed (invalid memory).`,
+              "warn",
+            );
+          }
+          return;
+        }
+
+        if (token.value === "%n") {
+          const stackPtr = consumeArg();
+          const ptr = state.injectedWriteTarget || stackPtr;
+          if (state.memory[ptr] === "isAdmin") {
+            state.vars.isAdmin = state.output.length;
+            setEvent(
+              `Write via %n: set isAdmin = ${state.vars.isAdmin}.`,
+              "danger",
+            );
+          } else if (state.memory[ptr] === "secret") {
+            state.vars.secret = `CORRUPTED_BY_%n(len=${state.output.length})`;
+            setEvent(`Write via %n: overwrote secret at ${ptr}.`, "danger");
+          } else {
+            setEvent(`%n attempted write to ${ptr}.`, "warn");
+          }
+          return;
+        }
+
+        state.output += token.value;
+      }
+
+      function runStep() {
+        if (!state.running) {
+          startSimulation();
+        }
+
+        if (state.tokenIndex >= state.tokens.length) {
+          finishSimulation();
+          return;
+        }
+
+        const token = state.tokens[state.tokenIndex];
+        processToken(token);
+        state.tokenIndex += 1;
+
+        renderTokens();
+        renderStack();
+        renderVars();
+        updateTerminal();
+
+        if (state.tokenIndex >= state.tokens.length) {
+          finishSimulation();
+        }
+      }
+
+      function startSimulation() {
+        state.input = el.fmtInput.value;
+        state.tokens = tokenizeFormatString(state.input);
+        state.tokenIndex = 0;
+        state.argIndex = 0;
+        state.injectedWriteTarget = state.input
+          .toLowerCase()
+          .includes(state.vars.secretAddress.toLowerCase())
+          ? state.vars.secretAddress
+          : null;
+        state.output = "";
+        state.running = true;
+        renderCode();
+        renderTokens();
+        renderStack();
+        renderVars();
+        updateTerminal();
+        if (state.vulnerable && state.injectedWriteTarget) {
+          setEvent(
+            `Vulnerable path: payload includes ${state.injectedWriteTarget}, so %n can write to secret.`,
+            "danger",
+          );
+        } else {
+          setEvent(
+            state.vulnerable
+              ? "Vulnerable path: printf treats user bytes as format instructions."
+              : "Safe path: fixed format string used; user input is data only.",
+            state.vulnerable ? "warn" : "ok",
+          );
+        }
+      }
+
+      function finishSimulation() {
+        state.running = false;
+        renderCode();
+        renderStack();
+        renderTokens();
+
+        if (state.vulnerable && state.vars.isAdmin) {
+          setEvent("Privilege check bypassed: isAdmin is non-zero.", "danger");
+        } else if (state.vulnerable && state.vars.secret !== DEFAULT_SECRET) {
+          setEvent(
+            "Secret integrity failed: secret was overwritten via %n.",
+            "danger",
+          );
+        } else if (state.vulnerable) {
+          setEvent(
+            "Simulation complete. Vulnerable path processed all tokens.",
+            "warn",
+          );
+        } else {
+          setEvent(
+            "Simulation complete. Safe path prevented format string interpretation.",
+            "ok",
+          );
+        }
+
+        stopAuto();
+      }
+
+      function resetSimulation() {
+        stopAuto();
+        state.tokens = [];
+        state.tokenIndex = 0;
+        state.argIndex = 0;
+        state.output = "";
+        state.running = false;
+        state.vars.isAdmin = 0;
+        state.vars.authLevel = 1;
+        state.vars.secret = DEFAULT_SECRET;
+        state.injectedWriteTarget = null;
+        renderCode();
+        renderVars();
+        renderStack();
+        renderTokens();
+        updateTerminal();
+        setEvent("Reset complete. Ready for another run.");
+      }
+
+      function autoPlay() {
+        if (!state.running) {
+          startSimulation();
+        }
+
+        stopAuto();
+        state.timerId = window.setInterval(() => {
+          if (!state.running || state.tokenIndex >= state.tokens.length) {
+            finishSimulation();
+            return;
+          }
+          runStep();
+        }, 420);
+      }
+
+      function stopAuto() {
+        if (state.timerId !== null) {
+          window.clearInterval(state.timerId);
+          state.timerId = null;
+        }
+      }
+
+      function loadPreset() {
+        const key = el.presetSelect.value;
+        el.fmtInput.value = PRESETS[key];
+        resetSimulation();
+      }
+
+      el.vulnModeBtn.addEventListener("click", () => setMode(true));
+      el.safeModeBtn.addEventListener("click", () => setMode(false));
+      el.startBtn.addEventListener("click", startSimulation);
+      el.stepBtn.addEventListener("click", runStep);
+      el.autoBtn.addEventListener("click", autoPlay);
+      el.resetBtn.addEventListener("click", resetSimulation);
+      el.loadPresetBtn.addEventListener("click", loadPreset);
+
+      renderCode();
+      renderVars();
+      renderStack();
+      renderTokens();
+      updateTerminal();
+      setEvent("Choose a payload and click Start.");
+    </script>
+  </body>
+</html>

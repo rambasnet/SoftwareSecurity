@@ -2,7 +2,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-int main() {
+int main()
+{
    int A = 5, B = 7, count_one, count_two;
 
    // Example of a %n format string
@@ -11,7 +12,7 @@ int main() {
    printf("count_one: %d\n", count_one);
    printf("count_two: %d\n", count_two);
 
-   // Stack Example
+   // Stack Example; value for %08x is not provide
    printf("A is %d and is at %08x.  B is %x.\n", A, &A);
 
    return 0;
